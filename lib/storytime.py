@@ -96,6 +96,7 @@ class StoryPlayer(base.Extension):
 		self.Story = None  # type: Story
 		self.Teller = None  # type: StoryTeller
 		self.ReattachStory()
+		self.timer = self.comp.op('./timer')
 
 	def ReattachStory(self):
 		self.Story = _GetDbManager().Db.getStory(
@@ -158,3 +159,19 @@ class StoryPlayer(base.Extension):
 			dat[row, 'start_fraction'] = segment.startFraction
 			dat[row, 'end_fraction'] = segment.endFraction
 			dat[row, 'text'] = segment.text
+
+	def OnSegmentTimerDone(self):
+		mode = self.comp.par.Playmode.eval()
+		if mode == 'single':
+			return
+		index = self.comp.par.Segmentindex.eval()
+		numsegs = self.SegmentCount
+		if mode == 'sequential':
+			if index >= numsegs - 1:
+				self.GoToSegment(0)
+			else:
+				self.OffsetSegmentIndex(1)
+			self.timer.par.start.pulse()
+		elif mode == 'random':
+			self.GoToRandomSegment()
+			self.timer.par.start.pulse()
