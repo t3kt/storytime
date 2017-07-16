@@ -1,8 +1,9 @@
 import json
+from typing import Dict, List, Optional
 
 class StoryDb:
 	def __init__(self, filepath=None):
-		self.tellers = {}
+		self.tellers = {}   # type: Dict[str, 'StoryTeller']
 		self.filepath = filepath
 
 	def clear(self):
@@ -29,33 +30,33 @@ class StoryDb:
 			'tellers': _itemDictToJson(self.tellers),
 		})
 
-	def addTeller(self, tellername, **kwargs):
+	def addTeller(self, tellername, **kwargs) -> 'StoryTeller':
 		if tellername in self.tellers:
 			raise Exception('Teller already exists: {0}'.format(tellername))
 		teller = self.tellers[tellername] = StoryTeller(tellername, **kwargs)
 		return teller
 
-	def addStory(self, tellername, storyname, **kwargs):
+	def addStory(self, tellername, storyname, **kwargs) -> 'Story':
 		teller = self.getTeller(tellername, check=True)
 		if storyname in teller.stories:
 			raise Exception('Story already exists: {0}/{0}'.format(tellername, storyname))
 		story = teller.stories[storyname] = Story(storyname, **kwargs)
 		return story
 
-	def getTeller(self, tellername, check=False):
+	def getTeller(self, tellername, check=False) -> Optional['StoryTeller']:
 		teller = self.tellers.get(tellername)
 		if check and not teller:
 			raise Exception('Teller not found: {0}'.format(tellername))
 		return teller
 
-	def getStory(self, tellername, storyname, check=False):
+	def getStory(self, tellername, storyname, check=False) -> Optional['Story']:
 		teller = self.getTeller(tellername, check=check)
 		story = teller and teller.stories.get(storyname)
 		if check and not story:
 			raise Exception('Story not found: {0}'.format(storyname))
 		return story
 
-	def getSegment(self, tellername, storyname, segmentindex):
+	def getSegment(self, tellername, storyname, segmentindex) -> Optional['StorySegment']:
 		story = self.getStory(tellername, storyname)
 		if not story or segmentindex >= len(story.segments):
 			return None
@@ -70,7 +71,7 @@ class StoryTeller:
 			obj=None):
 		self.name = name
 		self.label = label or name
-		self.stories = stories or {}
+		self.stories = stories or {}  # type: Dict[str, 'Story']
 		if obj:
 			self.label = obj.get('label', self.label)
 			if 'stories' in obj:
@@ -83,6 +84,12 @@ class StoryTeller:
 			'label': self.label,
 			'stories': _itemDictToJson(self.stories),
 		})
+
+	def __repr__(self):
+		return 'StoryTeller(name={}, label={}, stories={})'.format(
+			self.name,
+			self.label,
+			len(self.stories))
 
 class Story:
 	def __init__(
@@ -101,7 +108,7 @@ class Story:
 		self.fps = 30
 		self.width = 0
 		self.height = 0
-		self.segments = segments or []
+		self.segments = segments or []  # type: List['StorySegment']
 		if obj:
 			self.label = obj.get('label', self.label)
 			self.videofile = obj.get('videofile', self.videofile)
@@ -132,6 +139,13 @@ class Story:
 			return 1
 		return self.width / self.height
 
+	def __repr__(self):
+		return 'Story(name={}, label={}, duration={}, segments={})'.format(
+			self.name,
+			self.label,
+			self.duration,
+			len(self.segments))
+
 class StorySegment:
 	def __init__(
 			self,
@@ -157,6 +171,11 @@ class StorySegment:
 			'end': self.end,
 			'text': self.text,
 		})
+
+	def __repr__(self) -> str:
+		return 'StorySegment(start={}, end={}, text={})'.format(
+			self.start, self.end, self.text)
+
 
 def _CleanDict(d):
 	if not d:
