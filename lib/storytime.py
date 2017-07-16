@@ -11,13 +11,8 @@ except ImportError:
 if False:
 	from _stubs import *
 
-import sys
-pysrtpath = project.folder + '/pysrt'
-if pysrtpath not in sys.path:
-	sys.path.append(pysrtpath)
-del pysrtpath
-
 import pysrt
+# from moviepy.editor import *
 import datetime
 
 def _SrtTimeToSeconds(t):
