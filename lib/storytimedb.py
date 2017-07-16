@@ -76,7 +76,7 @@ class StoryTeller:
 			self.label = obj.get('label', self.label)
 			if 'stories' in obj:
 				for sname, sobj in obj['stories'].items():
-					self.stories[sname] = Story(sname, obj=sobj)
+					self.stories[sname] = Story(sname, self, obj=sobj)
 
 	def toJson(self):
 		return _CleanDict({
@@ -95,12 +95,14 @@ class Story:
 	def __init__(
 			self,
 			name,
+			teller: StoryTeller,
 			label=None,
 			videofile=None,
 			subfile=None,
 			segments=None,
 			obj=None):
 		self.name = name
+		self.teller = teller
 		self.label = name or label
 		self.videofile = videofile
 		self.subfile = subfile
@@ -118,7 +120,7 @@ class Story:
 			self.width = obj.get('width', self.width)
 			self.height = obj.get('height', self.height)
 			if 'segments' in obj:
-				self.segments = [StorySegment(obj=sobj) for sobj in obj['segments']]
+				self.segments = [StorySegment(self, obj=sobj) for sobj in obj['segments']]
 
 	def toJson(self):
 		return _CleanDict({
@@ -149,10 +151,12 @@ class Story:
 class StorySegment:
 	def __init__(
 			self,
+			story: Story,
 			start=None,
 			end=None,
 			text=None,
 			obj=None):
+		self.story = story
 		self.start = start or 0
 		self.end = end or 0
 		self.text = text or ''
@@ -164,6 +168,18 @@ class StorySegment:
 	@property
 	def duration(self):
 		return self.end - self.start
+
+	@property
+	def startFraction(self):
+		if self.story.duration == 0:
+			return 0
+		return self.start / self.story.duration
+
+	@property
+	def endFraction(self):
+		if self.story.duration == 0:
+			return 0
+		return self.end / self.story.duration
 
 	def toJson(self):
 		return _CleanDict({
