@@ -55,6 +55,7 @@ class StoryDbManager(base.Extension):
 				dat[row, 'id'] = '{0}/{1}'.format(teller.name, story.name)
 				dat[row, 'teller'] = teller.name
 				dat[row, 'story'] = story.name
+				dat[row, 'label'] = story.label
 				dat[row, 'duration'] = story.duration
 				dat[row, 'segmentcount'] = len(story.segments)
 				dat[row, 'vidfile'] = story.videofile
