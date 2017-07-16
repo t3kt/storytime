@@ -42,6 +42,13 @@ class StorytimeTool:
 		if args.subfile:
 			self.loadStorySubtitles(tellername, storyname, args.subfile)
 
+	def reloadSubtitles(self, args):
+		self.loadStorySubtitles(
+			args.teller,
+			args.story,
+			args.subfile,
+		)
+
 	def loadStorySubtitles(self, tellername, storyname, subfile=None):
 		story = self.db.getStory(tellername, storyname, check=True)
 		if subfile:
@@ -67,8 +74,10 @@ class StorytimeTool:
 	def performAction(self, action, args):
 		if action == 'addteller':
 			self.addTeller(args)
-		if action == 'addstory':
+		elif action == 'addstory':
 			self.addStory(args)
+		elif action == 'reloadsub':
+			self.reloadSubtitles(args)
 		else:
 			raise Exception('Unsupported action: {0}'.format(action))
 
@@ -79,7 +88,7 @@ def main():
 		help='Database file path')
 	parser.add_argument(
 		'action', metavar='A', type=str,
-		choices=['addteller', 'addstory', 'rewrite'],
+		choices=['addteller', 'addstory', 'rewrite', 'reloadsub'],
 		help='Database action')
 	parser.add_argument(
 		'-t', '--teller', metavar='T', type=str,

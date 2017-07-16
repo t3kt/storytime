@@ -8,7 +8,9 @@ class StoryDb:
 	def clear(self):
 		self.tellers = {}
 
-	def load(self):
+	def load(self, filepath=None):
+		if filepath:
+			self.filepath = filepath
 		with open(self.filepath, 'r') as f:
 			dbobj = json.load(f)
 		self.clear()
