@@ -41,6 +41,8 @@ class StoryDbManager(base.Extension):
 		dat.clear()
 		dat.appendRow(['name', 'label', 'storycount'])
 		for teller in self.Tellers:
+			if teller.disabled:
+				continue
 			dat.appendRow([
 				teller.name,
 				teller.label,
@@ -72,8 +74,14 @@ class StoryDbManager(base.Extension):
 			'text',
 		])
 		for teller in self.Tellers:
+			if teller.disabled:
+				continue
 			for story in teller.stories.values():
+				if story.disabled:
+					continue
 				for index, segment in enumerate(story.segments):
+					if segment.disabled:
+						continue
 					row = dat.numRows
 					dat.appendRow([])
 					dat[row, 'id'] = '{0}/{1}/{2}'.format(teller.name, story.name, index)
@@ -151,6 +159,8 @@ class StoryPlayer(base.Extension):
 			'text',
 		])
 		for segment in self.Segments:
+			if segment.disabled:
+				continue
 			row = dat.numRows
 			dat.appendRow([])
 			dat[row, 'start'] = segment.start

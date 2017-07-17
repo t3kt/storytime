@@ -1,5 +1,10 @@
 .idea/
-data/*
+data/**/*.mp4
+data/**/*.srt
+data/**/*.aep
+data/**/*.m4a
+data/**/*.wav
+data/**/*.vtt
 *.pyc
 *-output-*.*
 CrashAutoSave.toe

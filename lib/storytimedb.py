@@ -6,6 +6,10 @@ class StoryDb:
 		self.tellers = {}   # type: Dict[str, 'StoryTeller']
 		self.filepath = filepath
 
+	@property
+	def enabledTellers(self):
+		return _excludeDisabled(self.tellers.values())
+
 	def clear(self):
 		self.tellers = {}
 
@@ -40,7 +44,7 @@ class StoryDb:
 		teller = self.getTeller(tellername, check=True)
 		if storyname in teller.stories:
 			raise Exception('Story already exists: {0}/{0}'.format(tellername, storyname))
-		story = teller.stories[storyname] = Story(storyname, **kwargs)
+		story = teller.stories[storyname] = Story(storyname, teller, **kwargs)
 		return story
 
 	def getTeller(self, tellername, check=False) -> Optional['StoryTeller']:
@@ -68,20 +72,28 @@ class StoryTeller:
 			name,
 			label=None,
 			stories=None,
+			disabled=False,
 			obj=None):
 		self.name = name
 		self.label = label or name
 		self.stories = stories or {}  # type: Dict[str, 'Story']
+		self.disabled = disabled
 		if obj:
 			self.label = obj.get('label', self.label)
+			self.disabled = obj.get('disabled', self.disabled)
 			if 'stories' in obj:
 				for sname, sobj in obj['stories'].items():
 					self.stories[sname] = Story(sname, self, obj=sobj)
+
+	@property
+	def enabledStories(self):
+		return _excludeDisabled(self.stories.values())
 
 	def toJson(self):
 		return _CleanDict({
 			'name': self.name,
 			'label': self.label,
+			'disabled': self.disabled or None,
 			'stories': _itemDictToJson(self.stories),
 		})
 
@@ -100,6 +112,7 @@ class Story:
 			videofile=None,
 			subfile=None,
 			segments=None,
+			disabled=False,
 			obj=None):
 		self.name = name
 		self.teller = teller
@@ -110,6 +123,7 @@ class Story:
 		self.fps = 30
 		self.width = 0
 		self.height = 0
+		self.disabled = disabled
 		self.segments = segments or []  # type: List['StorySegment']
 		if obj:
 			self.label = obj.get('label', self.label)
@@ -119,8 +133,13 @@ class Story:
 			self.fps = obj.get('fps', self.fps)
 			self.width = obj.get('width', self.width)
 			self.height = obj.get('height', self.height)
+			self.disabled = obj.get('disabled', self.disabled)
 			if 'segments' in obj:
 				self.segments = [StorySegment(self, obj=sobj) for sobj in obj['segments']]
+
+	@property
+	def enabledSegments(self):
+		return _excludeDisabled(self.segments)
 
 	def toJson(self):
 		return _CleanDict({
@@ -132,6 +151,7 @@ class Story:
 			'fps': self.fps,
 			'width': self.width,
 			'height': self.height,
+			'disabled': self.disabled or None,
 			'segments': _itemListToJson(self.segments)
 		})
 
@@ -148,22 +168,20 @@ class Story:
 			self.duration,
 			len(self.segments))
 
-class StorySegment:
+
+class StoryRange:
 	def __init__(
 			self,
-			story: Story,
+			story,
 			start=None,
 			end=None,
-			text=None,
 			obj=None):
 		self.story = story
 		self.start = start or 0
 		self.end = end or 0
-		self.text = text or ''
 		if obj:
 			self.start = obj.get('start', self.start)
 			self.end = obj.get('end', self.end)
-			self.text = obj.get('text', self.text)
 
 	@property
 	def duration(self):
@@ -181,12 +199,51 @@ class StorySegment:
 			return 0
 		return self.end / self.story.duration
 
+	def containsTime(self, t):
+		return self.start <= t <= self.end
+
+	def fullContainsRange(self, r):
+		return r.start >= self.start and r.end <= self.end
+
 	def toJson(self):
 		return _CleanDict({
 			'start': self.start,
 			'end': self.end,
-			'text': self.text,
 		})
+
+	def __repr__(self) -> str:
+		return 'StoryRange(start={}, end={})'.format(
+			self.start, self.end)
+
+
+class StorySegment(StoryRange):
+	def __init__(
+			self,
+			story: Story,
+			start=None,
+			end=None,
+			text=None,
+			disabled=False,
+			obj=None):
+		super().__init__(
+			story,
+			start=start,
+			end=end,
+			obj=obj)
+		self.text = text or ''
+		self.disabled = disabled
+		if obj:
+			self.text = obj.get('text', self.text)
+			self.disabled = obj.get('disabled', self.disabled)
+
+	def toJson(self):
+		return _MergeDicts(
+			super().toJson(),
+			_CleanDict({
+				'text': self.text,
+				'disabled': self.disabled or None,
+			})
+		)
 
 	def __repr__(self) -> str:
 		return 'StorySegment(start={}, end={}, text={})'.format(
@@ -201,6 +258,15 @@ def _CleanDict(d):
 			del d[k]
 	return d
 
+def _MergeDicts(*parts):
+	if parts is None:
+		return {}
+	d = {}
+	for part in parts:
+		if part:
+			d.update(part)
+	return d
+
 def _itemDictToJson(items):
 	return {
 		itemname: item.toJson()
@@ -209,3 +275,6 @@ def _itemDictToJson(items):
 
 def _itemListToJson(items):
 	return [item.toJson() for item in items]
+
+def _excludeDisabled(items):
+	return [item for item in items if not item.disabled]

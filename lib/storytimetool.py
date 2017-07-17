@@ -15,14 +15,6 @@ class StorytimeTool:
 	def saveDb(self):
 		self.db.save()
 
-	def _getStory(self, tellername, storyname, check=False):
-		if check and self.db.getTeller(tellername):
-			raise Exception('Teller not found: {0}'.format(tellername))
-		story = self.db.getStory(tellername, storyname)
-		if check and not story:
-			raise Exception('Story not found: {0}/{0}'.format(tellername, storyname))
-		return story
-
 	def addTeller(self, args):
 		tellername = args.teller
 		self.db.addTeller(tellername, label=args.label)
@@ -56,6 +48,7 @@ class StorytimeTool:
 		subs = pysrt.open(story.subfile)
 		story.segments = [
 			StorySegment(
+				story,
 				start=item.start.ordinal / 1000,
 				end=item.end.ordinal / 1000,
 				text=item.text_without_tags
