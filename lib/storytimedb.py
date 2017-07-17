@@ -185,6 +185,32 @@ class Story:
 			len(self.segments))
 
 
+class StoryTime:
+	def __init__(
+			self,
+			val=None,
+			rawval=None):
+		self.val = val or 0
+		self.rawval = rawval
+		raise NotImplemented('INCOMPLETE!!!')
+
+	@classmethod
+	def fromValue(cls, val):
+		if val is None:
+			return None
+		if isinstance(val, (float, int)):
+			return cls(val=val)
+		if isinstance(val, str):
+			if val == '':
+				return None
+			return cls(val=_parseTimeString(val), rawval=val)
+		raise Exception('Unsupported time value: {0!r}'.format(val))
+
+def _parseTimeString(s):
+	if ':' in s:
+		pass
+	pass
+
 class StoryRange:
 	def __init__(
 			self,
