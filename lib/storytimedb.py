@@ -112,6 +112,7 @@ class Story:
 			videofile=None,
 			subfile=None,
 			segments=None,
+			enabledranges=None,
 			disabled=False,
 			obj=None):
 		self.name = name
@@ -125,6 +126,7 @@ class Story:
 		self.height = 0
 		self.disabled = disabled
 		self.segments = segments or []  # type: List['StorySegment']
+		self.enabledranges = enabledranges or []  # type: List['StoryRange']
 		if obj:
 			self.label = obj.get('label', self.label)
 			self.videofile = obj.get('videofile', self.videofile)
@@ -136,10 +138,23 @@ class Story:
 			self.disabled = obj.get('disabled', self.disabled)
 			if 'segments' in obj:
 				self.segments = [StorySegment(self, obj=sobj) for sobj in obj['segments']]
+			if 'enabledranges' in obj:
+				self.enabledranges = [StoryRange(self, obj=robj) for robj in obj['enabledranges']]
+
+	def isInEnabledRange(self, segment: 'StorySegment'):
+		if not self.enabledranges:
+			return True
+		return any([r.containsRange(segment) for r in self.enabledranges])
 
 	@property
 	def enabledSegments(self):
-		return _excludeDisabled(self.segments)
+		if self.enabledranges:
+			return [
+				segment for segment in self.segments
+				if not segment.disabled and self.isInEnabledRange(segment)
+			]
+		else:
+			return _excludeDisabled(self.segments)
 
 	def toJson(self):
 		return _CleanDict({
@@ -152,7 +167,8 @@ class Story:
 			'width': self.width,
 			'height': self.height,
 			'disabled': self.disabled or None,
-			'segments': _itemListToJson(self.segments)
+			'segments': _itemListToJson(self.segments),
+			'enabledranges': _itemListToJson(self.enabledranges),
 		})
 
 	@property
@@ -202,7 +218,7 @@ class StoryRange:
 	def containsTime(self, t):
 		return self.start <= t <= self.end
 
-	def fullContainsRange(self, r):
+	def containsRange(self, r):
 		return r.start >= self.start and r.end <= self.end
 
 	def toJson(self):

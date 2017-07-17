@@ -4,6 +4,7 @@ data/**/*.srt
 data/**/*.aep
 data/**/*.m4a
 data/**/*.wav
+data/**/*.mov
 data/**/*.vtt
 *.pyc
 *-output-*.*

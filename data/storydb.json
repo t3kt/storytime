@@ -4327,6 +4327,12 @@
               "end": 160.939,
               "text": "Okay bye."
             }
+          ],
+          "enabledranges": [
+            {
+              "start": 0,
+              "end": 61
+            }
           ]
         }
       }

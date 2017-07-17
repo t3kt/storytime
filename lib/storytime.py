@@ -79,7 +79,7 @@ class StoryDbManager(base.Extension):
 			for story in teller.stories.values():
 				if story.disabled:
 					continue
-				for index, segment in enumerate(story.segments):
+				for index, segment in enumerate(story.enabledSegments):
 					if segment.disabled:
 						continue
 					row = dat.numRows
@@ -123,7 +123,7 @@ class StoryPlayer(base.Extension):
 
 	@property
 	def Segments(self):
-		return self.Story.segments if self.Story else []
+		return self.Story.enabledSegments if self.Story else []
 
 	def GoToSegment(self, index):
 		numsegs = self.SegmentCount
