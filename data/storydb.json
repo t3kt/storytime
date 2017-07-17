@@ -2001,6 +2001,24 @@
               "end": 377.3,
               "text": "alligators bye"
             }
+          ],
+          "enabledranges": [
+            {
+              "start": 12,
+              "end": 60
+            },
+            {
+              "start": 70,
+              "end": 211
+            },
+            {
+              "start": 219,
+              "end": 266
+            },
+            {
+              "start": 270,
+              "end": 344
+            }
           ]
         }
       }
