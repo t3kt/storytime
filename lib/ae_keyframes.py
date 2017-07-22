@@ -59,7 +59,8 @@ class _Parser:
 
 	@property
 	def _State(self):
-		return ''
+		cells = self.indat.row(self.row)
+		return '       | cells: {0!r}'.format([repr(c.val) for c in cells] if cells else 'None')
 
 	def _LogBegin(self, event):
 		self.log.LogBegin('(aekeyparser)', str(self.row), '{} {}'.format(event, self._State))
@@ -67,20 +68,32 @@ class _Parser:
 	def _Log(self, event):
 		self.log.LogEvent('(aekeyparser)', str(self.row), '{} {}'.format(event, self._State))
 
-	def _LogEnd(self, event):
-		self.log.LogEnd('(aekeyparser)', str(self.row), '{} {}'.format(event, self._State))
+	def _LogEnd(self, event=None):
+		if event:
+			self.log.LogEnd('(aekeyparser)', str(self.row), '{} {}'.format(event, self._State))
+		else:
+			self.log.LogEnd('', '', None)
+
+	def _GoToNextRow(self):
+		self.row += 1
+
+	def _LogCurrentRow(self):
+		cells = self.indat.row(self.row)
+		self._Log('current row : {0!r}'.format([repr(c.val) for c in cells] if cells else 'None'))
 
 	def Parse(self):
 		self._LogBegin('Parse()')
 		try:
-			self.row = 2
+			self._GoToNextRow()
+			self._GoToNextRow()
 			if not self._GoToNextBlankRow(1):
 				return
-			self.row += 1
+			self._GoToNextRow()
 			self.blocks = []
 			sanity = SANITY
 			while self.row < self.numRows:
 				self._LogBegin('Parse() - scanning row {}...'.format(self.row))
+				self._LogCurrentRow()
 				try:
 					if self.indat[self.row, 0] == 'End of Keyframe Data':
 						return
@@ -89,20 +102,19 @@ class _Parser:
 					sanity -= 1
 					block = self._ParseNextBlock()
 					self.blocks.append(block)
-					if not self._GoToNextBlankRow(0):
-						break
 					if self.indat[self.row, 0] == '':
-						self.row += 1
-					self.row += 1
+						self._GoToNextRow()
+					if self.indat[self.row, 0] == '':
+						self._GoToNextRow()
 				finally:
 					self._LogEnd('Parse() - done scanning row {}'.format(self.row))
 		finally:
-			self._LogEnd('Parse()')
+			self._LogEnd()
 
 	def _GoToNextBlankRow(self, col):
 		self._LogBegin('_GoToNextBlankRow()')
 		try:
-			self.row += 1
+			self._GoToNextRow()
 			sanity = SANITY
 			while self.row < self.numRows:
 				if sanity == 0:
@@ -110,10 +122,10 @@ class _Parser:
 				sanity -= 1
 				if self.indat[self.row, col] == '':
 					return True
-				self.row += 1
+				self._GoToNextRow()
 			return False
 		finally:
-			self._LogEnd('_GoToNextBlankRow()')
+			self._LogEnd()
 
 	def _ParseNextBlock(self):
 		self._LogBegin('_ParseNextBlock()')
@@ -124,16 +136,17 @@ class _Parser:
 			param = indat[self.row, 2].val
 			blockname = '{}/{}/{}'.format(group, components, param)
 			self._Log('_ParseNextBlock() - block name: {}'.format(blockname))
-			self.row += 1
+			self._GoToNextRow()
 			attribs = {
 				indat[self.row, i].val: []
 				for i in range(2, indat.numCols)
 				if indat[self.row, i].val != ''
 			}
 			self._Log('_ParseNextBlock() - attribs: {}'.format(attribs.keys()))
-			self.row += 1
 			sanity = SANITY
+			numframes = 0
 			while self.row < self.numRows:
+				self._GoToNextRow()
 				if sanity == 0:
 					raise Exception('INSANITY!!!')
 				sanity -= 1
@@ -145,14 +158,15 @@ class _Parser:
 					self.maxFrame = f
 				for i, attr in enumerate(attribs):
 					attribs[attr].append([f, float(indat[self.row, i + 2])])
+				numframes += 1
 				# self._Log('attribs: {}'.format(attribs))
-				self.row += 1
+			self._Log('_ParseNextBlock() - found {} frames'.format(numframes))
 			return {
 				'name': blockname,
 				'attribs': attribs,
 			}
 		finally:
-			self._LogEnd('_ParseNextBlock()')
+			self._LogEnd()
 
 	def WriteTo(self, channels, keys):
 		self._LogBegin('WriteTo()')
@@ -166,6 +180,15 @@ class _Parser:
 					channels.appendRow([])
 					channels[chanid, 'name'] = _Clean('{}/{}'.format(blockname, attr))
 					channels[chanid, 'id'] = chanid
+					channels[chanid, 'left'] = channels[chanid, 'right'] = 'hold'
+					channels[chanid, 'default'] = 0
+					channels[chanid, 'keys'] = 'keys'
+					channels[chanid, 'liner'] = 0.14
+					channels[chanid, 'lineg'] = 0.5
+					channels[chanid, 'lineb'] = 0.5
+					channels[chanid, 'picked'] = 0
+					channels[chanid, 'display'] = 1
+					channels[chanid, 'template'] = 0
 					for f, val in frames:
 						i = keys.numRows
 						keys.appendRow([])
