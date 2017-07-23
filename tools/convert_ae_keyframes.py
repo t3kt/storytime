@@ -251,12 +251,12 @@ class ConverterTool:
 		for block in self.frameset.blocks:
 			for attr, frames in block.attrs.items():
 				chanid += 1
-				valscale = self.frameset.pixelscale if IsPixels(block.name) else 1
+				# valscale = self.frameset.pixelscale if IsPixels(attr) else 1
 				for f, val in frames:
 					writer.AppendRow({
 						'id': chanid,
 						'x': f + 1,
-						'y': val * valscale,
+						'y': val, # * valscale,
 						'expression': 'linear()',
 					})
 
