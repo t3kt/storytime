@@ -19,6 +19,9 @@ import util
 _ParseFloat = util.ParseFloat
 from ae_keyframes import KeyframeSet, Block
 
+def eprint(*args):
+	print(*args, file=sys.stderr)
+
 def _SplitLines(infile):
 	lines = []
 	for line in infile.readlines():
@@ -33,19 +36,9 @@ class Parser:
 		self.verbose = verbose
 		self.row = 0
 		self.output = KeyframeSet()
-		# self.sanity = 100000
-
-	def _SanityTick(self):
-		# self.sanity -= 1
-		# if self.sanity <= 0:
-		# 	raise Exception('INSANITY ACHIEVED!!')
-		pass
 
 	def _FormatEvent(self, event):
-		if not event:
-			return ''
-		# return '[{}] {} (SANITY: {})'.format(self.row, event, self.sanity)
-		return '[{}] {}'.format(self.row, event)
+		return '[{}] {}'.format(self.row, event) if event else ''
 
 	def _LogBegin(self, event):
 		if self.verbose:
@@ -111,7 +104,6 @@ class Parser:
 				try:
 					if self._Cell(0) == 'End of Keyframe Data':
 						return
-					self._SanityTick()
 					block = self._ParseNextBlock()
 					if not block:
 						return
@@ -123,17 +115,6 @@ class Parser:
 							return
 				finally:
 					self._LogEnd()
-		finally:
-			self._LogEnd()
-
-	def ZZZZ_GoToNextBlankRow(self, col):
-		self._LogBegin('_GoToNextBlankRow()')
-		try:
-			while self._GoToNextRow():
-				self._SanityTick()
-				if self._Cell(col) == '':
-					return True
-			return False
 		finally:
 			self._LogEnd()
 
@@ -159,7 +140,6 @@ class Parser:
 			self._Log('_ParseNextBlock() - attrs: {}'.format(list(block.attrs.keys())))
 			numframes = 0
 			while self._GoToNextRow():
-				self._SanityTick()
 				if not self._Cell(1):
 					self._Log('_ParseNextBlock() - found blank row in block. stopping')
 					break
@@ -174,12 +154,63 @@ class Parser:
 		finally:
 			self._LogEnd()
 
+class ConverterTool:
+	def __init__(self, args):
+		self.inpath = args.inpath
+		self.verbose = args.verbose
+		self.outpath = args.output
+		self.pretty = args.pretty
+		if args.format in ['json', 'text']:
+			self.format = args.format
+		elif self.outpath:
+			self.format = 'json' if self.outpath.endswith('.json') else 'text'
+		else:
+			self.format = 'json'
+
+	def Run(self):
+		if self.verbose:
+			eprint('Reading from ' + self.inpath)
+		with open(self.inpath, 'r') as infile:
+			inputrows = _SplitLines(infile)
+		parser = Parser(inputrows, verbose=self.verbose)
+		parser.Parse()
+		frameset = parser.output
+		eprint('Keyframe data: ', frameset)
+		if self.outpath:
+			with open(self.outpath, 'w') as outfile:
+				if self.format == 'json':
+					self._WriteJson(frameset, outfile)
+				else:
+					self._WriteText(frameset, outfile)
+			eprint('Saved to ', self.outpath)
+		else:
+			if self.format == 'json':
+				self._WriteJson(frameset, sys.stdout)
+			else:
+				self._WriteText(frameset, sys.stdout)
+
+	@staticmethod
+	def _WriteText(frameset, out):
+		def writeline(parts):
+			out.write('\t'.join([str(part) for part in parts]))
+			out.write('\n')
+		writeline(['!i', json.dumps(frameset.infoJson())])
+		for block in frameset.blocks:
+			writeline(['!b', block.name])
+			for attr, frames in block.attrs.items():
+				writeline(['!a', attr])
+				for f, val in frames:
+					writeline(['!f', f, val])
+
+	def _WriteJson(self, frameset, out):
+		json.dump(
+			frameset.toJson(), out,
+			indent='  ' if self.pretty else None)
+
 _numSuffixRx = re.compile(r'\s*#\d+')
 def _StripNumSuffix(s):
 	return _numSuffixRx.sub('', s)
 
-def _WriteKeyframeSet(frameset, out):
-	out.write('OMG KEYFRAME SET: ' + repr(frameset))
 
 def main():
 	parser = argparse.ArgumentParser(description='Convert After Effects keyframe data')
@@ -190,26 +221,18 @@ def main():
 		'-o', '--output', type=str,
 		help='Output file')
 	parser.add_argument(
+		'-f', '--format', type=str, default='auto',
+		choices=['json', 'text', 'auto'],
+		help='Output format')
+	parser.add_argument(
 		'-v', '--verbose', type=bool, default=False,
 		help='Verbose logging')
 	parser.add_argument(
 		'-p', '--pretty', type=bool, default=False,
 		help='Pretty-print output JSON')
 	args = parser.parse_args()
-	if args.verbose:
-		print('Reading from ' + args.inpath, file=sys.stderr)
-	with open(args.inpath, 'r') as infile:
-		inputrows = _SplitLines(infile)
-	parser = Parser(inputrows, verbose=args.verbose)
-	parser.Parse()
-	frameset = parser.output
-	print('Keyframe data: ', frameset, file=sys.stderr)
-	if args.output:
-		with open(args.output, 'w') as outfile:
-			json.dump(frameset.toJson(), outfile)
-		print('Saved to ' + args.output, file=sys.stderr)
-	else:
-		json.dump(frameset.toJson(), sys.stdout)
+	tool = ConverterTool(args)
+	tool.Run()
 
 if __name__ == '__main__':
 	main()
