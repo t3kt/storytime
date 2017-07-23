@@ -59,7 +59,7 @@ class AeKeyframeParser(base.Extension):
 
 			compattrs = self._GetCompAttrs()
 
-			parser = _Parser(
+			parser = Parser(
 				self,
 				datatable,
 				compattrs=compattrs,
@@ -98,12 +98,13 @@ class AeKeyframeParser(base.Extension):
 					channels[chanid, 'picked'] = 1
 					channels[chanid, 'display'] = 1
 					channels[chanid, 'template'] = 0
+					valscale = self.Keyframes.pixelscale if _IsPixels(blockname) else 1
 					for f, val in frames:
 						i = keys.numRows
 						keys.appendRow([])
 						keys[i, 'id'] = chanid
 						keys[i, 'x'] = f + 1
-						keys[i, 'y'] = val * self.Keyframes.pixelscale
+						keys[i, 'y'] = val * valscale
 						keys[i, 'expression'] = 'linear()'
 		finally:
 			self.LogEnd()
@@ -118,7 +119,7 @@ class AeKeyframeParser(base.Extension):
 			self.LogEvent('_GetCompAttrs() - {}'.format(compattrs))
 		return compattrs
 
-class _Parser:
+class Parser:
 	def __init__(self, host, indat, compattrs, verbose=False):
 		self.host = host
 		self.indat = indat
@@ -133,7 +134,7 @@ class _Parser:
 			raise Exception('INSANITY ACHIEVED!!')
 
 	def _FormatEvent(self, event):
-		return '[{}] {}'.format(self.row, event)
+		return '[{}] {} (SANITY: {})'.format(self.row, event, self.sanity)
 
 	def _LogBegin(self, event):
 		self.host.LogBegin(self._FormatEvent(event))
@@ -175,6 +176,7 @@ class _Parser:
 						return
 					self._SanityTick()
 					block = self._ParseNextBlock()
+					self._GoToNextRow()
 					self.output.blocks.append(block)
 					if self.indat[self.row, 0] == '':
 						self._GoToNextRow()
