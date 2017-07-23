@@ -45,31 +45,41 @@ class AeKeyframeParser(base.Extension):
 	def __init__(self, comp):
 		super().__init__(comp)
 		self.animation = comp.op('./animation')
-		self.datatable = comp.op('./key_data_table')
-		self.channels = self.animation.op('./channels')
-		self.keys = self.animation.op('./keys')
 		self.Keyframes = KeyframeSet()
-		self.LoadKeyframes()
+
+	@property
+	def _Verbose(self):
+		return self.comp.par.Verbose.eval()
 
 	def LoadKeyframes(self):
-		self.datatable.par.loadonstart.pulse()
-		self.channels.clear(keepFirstRow=True)
-		self.keys.clear(keepFirstRow=True)
+		self.LogBegin('LoadKeyframes()')
+		try:
+			datatable = self.comp.op('./key_data_table')
+			datatable.par.loadonstart.pulse()
 
-		parser = _Parser(
-			self,
-			self.datatable,
-			verbose=self.comp.par.Verbose.eval())
-		parser.Parse()
-		self.Keyframes = parser.output
-		self._WriteKeyframes()
+			compattrs = self._GetCompAttrs()
+
+			parser = _Parser(
+				self,
+				datatable,
+				compattrs=compattrs,
+				verbose=self._Verbose)
+			parser.Parse()
+			self.Keyframes = parser.output
+			self.LogEvent('LoadKeyframes() keyframes: {0!r}'.format(self.Keyframes))
+			self._WriteKeyframes()
+		finally:
+			self.LogEnd()
 
 	def _WriteKeyframes(self):
-		self._LogBegin('_WriteKeyframes()')
+		self.LogBegin('_WriteKeyframes()')
 		try:
-			self.animation.par.end = self.Keyframes.maxframe
-			channels = self.channels
-			keys = self.keys
+			channels = self.animation.op('./channels')
+			keys = self.animation.op('./keys')
+			channels.clear(keepFirstRow=True)
+			keys.clear(keepFirstRow=True)
+			self.animation.time.rate = self.Keyframes.fps
+			self.animation.time.end = self.Keyframes.maxframe or 1
 			channels.clear(keepFirstRow=True)
 			keys.clear(keepFirstRow=True)
 			for block in self.Keyframes.blocks:
@@ -96,27 +106,34 @@ class AeKeyframeParser(base.Extension):
 						keys[i, 'y'] = val * self.Keyframes.pixelscale
 						keys[i, 'expression'] = 'linear()'
 		finally:
-			self._LogEnd()
+			self.LogEnd()
 
-SANITY = 20000
+	def _GetCompAttrs(self):
+		vals = self.comp.op('./comp_vals')
+		compattrs = {
+			c.name: float(c)
+			for c in vals.chans('*')
+		}
+		if self._Verbose:
+			self.LogEvent('_GetCompAttrs() - {}'.format(compattrs))
+		return compattrs
 
 class _Parser:
-	def __init__(self, host, indat, verbose=False):
+	def __init__(self, host, indat, compattrs, verbose=False):
 		self.host = host
 		self.indat = indat
 		self.verbose = verbose
 		self.row = 0
-		self.output = KeyframeSet()
+		self.output = KeyframeSet(compattrs)
+		self.sanity = 100000
 
-	@property
-	def _State(self):
-		if not self.verbose:
-			return ''
-		cells = self.indat.row(self.row)
-		return '       | cells: {0!r}'.format([repr(c.val) for c in cells] if cells else 'None')
+	def _SanityTick(self):
+		self.sanity -= 1
+		if self.sanity <= 0:
+			raise Exception('INSANITY ACHIEVED!!')
 
 	def _FormatEvent(self, event):
-		return '[{}] {}{}'.format(self.row, event, self._State)
+		return '[{}] {}'.format(self.row, event)
 
 	def _LogBegin(self, event):
 		self.host.LogBegin(self._FormatEvent(event))
@@ -134,44 +151,29 @@ class _Parser:
 	def _GoToNextRow(self):
 		self.row += 1
 
-	def _LogCurrentRow(self):
+	def _LogCurrentRow(self, message=None):
 		cells = self.indat.row(self.row)
-		self._Log('current row : {0!r}'.format([repr(c.val) for c in cells] if cells else 'None'))
-
-	def _ParseHeaderAttrs(self):
-		try:
-			self._LogBegin('_ParseHeaderAttrs()')
-			compattrs = {}
-			while self.row < self.indat.numRows:
-				if self.indat[self.row, 1] == '':
-					break
-				self.row += 1
-				compattrs[self.indat[self.row, 1].val] = self.indat[self.row, 2].val
-			return compattrs
-		finally:
-			self._LogEnd()
+		self._Log('{0} current row : {1!r}'.format(
+			message or '',
+			[repr(c.val) for c in cells] if cells else 'None'))
 
 	def Parse(self):
 		self._LogBegin('Parse()')
 		try:
-			self._GoToNextRow()
-			self._GoToNextRow()
+			self.row = 3
 			if self.row >= self.indat.numRows:
 				return
-			self.output = KeyframeSet(self._ParseHeaderAttrs())
-			if not self._GoToNextBlankRow(1):
+			if not self._GoToNextBlankRow(0):
 				return
 			self._GoToNextRow()
-			sanity = SANITY
+			self._LogCurrentRow('Parse() - starting to parse blocks')
 			while self.row < self.indat.numRows:
 				self._LogBegin('Parse() - scanning row {}...'.format(self.row))
 				self._LogCurrentRow()
 				try:
 					if self.indat[self.row, 0] == 'End of Keyframe Data':
 						return
-					if sanity == 0:
-						raise Exception('INSANITY!!!')
-					sanity -= 1
+					self._SanityTick()
 					block = self._ParseNextBlock()
 					self.output.blocks.append(block)
 					if self.indat[self.row, 0] == '':
@@ -187,11 +189,8 @@ class _Parser:
 		self._LogBegin('_GoToNextBlankRow()')
 		try:
 			self._GoToNextRow()
-			sanity = SANITY
 			while self.row < self.indat.numRows:
-				if sanity == 0:
-					raise Exception('INSANITY!!!')
-				sanity -= 1
+				self._SanityTick()
 				if self.indat[self.row, col] == '':
 					return True
 				self._GoToNextRow()
@@ -218,14 +217,11 @@ class _Parser:
 				])
 			self._Log('_ParseNextBlock() - block name: {}'.format(block.name))
 			self._GoToNextRow()
-			self._Log('_ParseNextBlock() - attrs: {}'.format(block.attrs.keys()))
-			sanity = SANITY
+			self._Log('_ParseNextBlock() - attrs: {}'.format(list(block.attrs.keys())))
 			numframes = 0
 			while self.row < self.indat.numRows:
+				self._SanityTick()
 				self._GoToNextRow()
-				if sanity == 0:
-					raise Exception('INSANITY!!!')
-				sanity -= 1
 				if indat[self.row, 1] == '':
 					self._Log('_ParseNextBlock() - found blank row in block. stopping')
 					break
@@ -253,10 +249,11 @@ class KeyframeSet:
 		if attrs is None:
 			attrs = {}
 		self.attrs = attrs
-		self.width = util.ParseFloat(attrs.get('Source Width'), 1)
-		self.height = util.ParseFloat(attrs.get('Source Height'), 1)
+		self.width = util.ParseFloat(attrs.get('Source_Width'), 1)
+		self.height = util.ParseFloat(attrs.get('Source_Height'), 1)
 		self.pixelscale = 1.0 / min(self.width, self.height)
-		self.fps = util.ParseFloat(attrs.get('Units Per Second'), 30)
+		self.fps = util.ParseFloat(attrs.get('Units_Per_Second'), 30)
+		self.fps = float(attrs['Unit_Per_Second']) if attrs else None
 		self.maxframe = 0
 		self.blocks = []
 
