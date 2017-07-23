@@ -17,7 +17,7 @@ del _initPath
 
 import util
 _ParseFloat = util.ParseFloat
-from ae_keyframes import KeyframeSet, Block, StripNumSuffix, CleanAttrib, IsPixels
+from ae_keyframes import KeyframeSet, Block, StripNumSuffix
 
 def eprint(*args):
 	print(*args, file=sys.stderr)
@@ -225,7 +225,7 @@ class ConverterTool:
 			for attr, _ in block.attrs.items():
 				chanid += 1
 				writer.AppendRow({
-					'name': '{}:{}'.format(_Clean(block.name), _Clean(CleanAttrib(attr))),
+					'name': '{}:{}'.format(_Clean(block.name), _Clean(attr)),
 					'id': chanid,
 					'left': 'hold',
 					'right': 'hold',
