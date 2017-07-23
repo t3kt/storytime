@@ -1,11 +1,14 @@
 import sys
 import os
 import re
+import json
+import argparse
 
 def _initPath():
 	basedir = os.path.dirname(__file__)
 	for parts in [
 		['..', 'common', 'lib'],
+		['..', 'lib'],
 	]:
 		sys.path.append(os.path.join(basedir, *parts))
 	pass
@@ -14,41 +17,19 @@ del _initPath
 
 import util
 _ParseFloat = util.ParseFloat
-
-class Host:
-	def __init__(self):
-		self.logger = util.IndentedLogger()
-
-	def LogEvent(self, event):
-		self.logger.LogEvent('', '', event)
-
-	def LogBegin(self, event):
-		self.logger.LogBegin('', '', event)
-
-	def LogEnd(self, event=None):
-		self.logger.LogEnd('', '', event)
+from ae_keyframes import KeyframeSet, Block
 
 def _SplitLines(infile):
 	lines = []
-	# maxcount = 0
-	# for line in infile.readlines():
-	# 	parts = line.split('\t')
-	# 	if len(parts) > maxcount:
-	# 		maxcount = len(parts)
-	# 		lines.append(parts)
-	# for i in range(len(lines)):
-	# 	parts = lines[i]
-	# 	while len(parts) < maxcount:
-	# 		parts.append('')
 	for line in infile.readlines():
 		line = line.rstrip('\r\n')
 		lines.append(line.split('\t') if line else [])
 	return lines
 
 class Parser:
-	def __init__(self, inlines, verbose=False):
-		self.logger = util.IndentedLogger()
-		self.inlines = inlines
+	def __init__(self, inputrows, verbose=False):
+		self.logger = util.IndentedLogger(outfile=sys.stderr)
+		self.inputrows = inputrows
 		self.verbose = verbose
 		self.row = 0
 		self.output = KeyframeSet()
@@ -67,19 +48,21 @@ class Parser:
 		return '[{}] {}'.format(self.row, event)
 
 	def _LogBegin(self, event):
-		self.logger.LogBegin('', '', self._FormatEvent(event))
+		if self.verbose:
+			self.logger.LogBegin('', '', self._FormatEvent(event))
 
 	def _Log(self, event):
 		if self.verbose:
 			self.logger.LogEvent('', '', self._FormatEvent(event))
 
 	def _LogEnd(self, event=None):
-		self.logger.LogEnd('', '', self._FormatEvent(event))
+		if self.verbose:
+			self.logger.LogEnd('', '', self._FormatEvent(event))
 
 	def _GoToNextRow(self):
 		self.row += 1
-		if self.row < len(self.inlines):
-			self.rowcells = self.inlines[self.row]
+		if self.row < len(self.inputrows):
+			self.rowcells = self.inputrows[self.row]
 			return True
 		else:
 			self.rowcells = []
@@ -88,21 +71,20 @@ class Parser:
 	def _LogCurrentRow(self, message=None):
 		self._Log('{0} current row : {1!r}'.format(
 			message or '',
-			self.inlines[self.row]))
+			self.inputrows[self.row]))
 
 	def _Cell(self, col):
-		if self.row >= len(self.inlines):
+		if not self.rowcells:
 			return None
-		parts = self.inlines[self.row]
-		if col >= len(parts):
+		if col >= len(self.rowcells):
 			return None
-		return parts[col]
+		return self.rowcells[col]
 
 	def _ParseCompAttrs(self):
 		compattrs = {}
 		self._LogBegin('_ParseCompAttrs()')
 		try:
-			while self.row < len(self.inlines):
+			while self.row < len(self.inputrows):
 				if not self._Cell(1):
 					break
 				compattrs[self._Cell(1)] = _ParseFloat(self._Cell(2))
@@ -121,7 +103,7 @@ class Parser:
 			self.output = KeyframeSet(self._ParseCompAttrs())
 			self._GoToNextRow()
 			self._LogCurrentRow('Parse() - starting to parse blocks')
-			while self.row < len(self.inlines):
+			while self.row < len(self.inputrows):
 				if not self._Cell(0):
 					return
 				self._LogBegin('Parse() - scanning row {}...'.format(self.row))
@@ -136,10 +118,9 @@ class Parser:
 					self.output.blocks.append(block)
 					if not self._GoToNextRow():
 						return
-					if self._Cell(0) == '':
-						self._GoToNextRow()
-					if self._Cell(0) == '':
-						self._GoToNextRow()
+					while not self._Cell(0):
+						if self._GoToNextRow():
+							return
 				finally:
 					self._LogEnd()
 		finally:
@@ -170,9 +151,9 @@ class Parser:
 			block = Block(
 				name=blockname,
 				attrnames=[
-					_CleanAttrib(self._Cell(i))
-					for i in range(2, len(self.rowcells))
-					if self._Cell(i) != ''
+					attr
+					for attr in self.rowcells[2:]
+					if attr
 				])
 			self._Log('_ParseNextBlock() - block name: {}'.format(block.name))
 			self._Log('_ParseNextBlock() - attrs: {}'.format(list(block.attrs.keys())))
@@ -197,66 +178,38 @@ _numSuffixRx = re.compile(r'\s*#\d+')
 def _StripNumSuffix(s):
 	return _numSuffixRx.sub('', s)
 
-_pixelsSuffix = re.compile(r' pixels$')
-def _CleanAttrib(s):
-	return _pixelsSuffix.sub('', s)
-
-class Block:
-	def __init__(self, name, attrnames):
-		self.name = name
-		self.attrs = {
-			attr: []
-			for attr in attrnames
-		}
-
-class KeyframeSet:
-	def __init__(self, attrs=None):
-		if attrs is None:
-			attrs = {}
-		self.attrs = attrs
-		self.width = _ParseFloat(attrs.get('Source Width'), 1)
-		self.height = _ParseFloat(attrs.get('Source Height'), 1)
-		self.pixelscale = 1.0 / min(self.width, self.height)
-		self.fps = _ParseFloat(attrs.get('Units Per Second'), 30)
-		self.maxframe = 0
-		self.blocks = []
-
-	def __repr__(self):
-		return 'KeyframeSet(w:{}, h:{}, fps:{}, maxframe:{}, blocks:{})'.format(
-			self.width, self.height, self.fps, self.maxframe, len(self.blocks))
-
 def _WriteKeyframeSet(frameset, out):
 	out.write('OMG KEYFRAME SET: ' + repr(frameset))
 
-def main(args):
-	inpath = None
-	outpath = None
-	verbose = False
-	if len(args) == 4:
-		if args[1] != '-v':
-			usage(args)
-		verbose = True
-		inpath = args[2]
-		outpath = args[3]
-	elif len(args) == 3:
-		verbose = False
-		inpath = args[1]
-		outpath = args[2]
-	else:
-		usage(args)
-	print('INPUT:  ' + inpath)
-	print('OUTPUT: ' + outpath)
-	with open(inpath, 'r') as infile:
-		inlines = _SplitLines(infile)
-	parser = Parser(inlines, verbose=verbose)
+def main():
+	parser = argparse.ArgumentParser(description='Convert After Effects keyframe data')
+	parser.add_argument(
+		'inpath', type=str,
+		help='Keyframe data input file')
+	parser.add_argument(
+		'-o', '--output', type=str,
+		help='Output file')
+	parser.add_argument(
+		'-v', '--verbose', type=bool, default=False,
+		help='Verbose logging')
+	parser.add_argument(
+		'-p', '--pretty', type=bool, default=False,
+		help='Pretty-print output JSON')
+	args = parser.parse_args()
+	if args.verbose:
+		print('Reading from ' + args.inpath, file=sys.stderr)
+	with open(args.inpath, 'r') as infile:
+		inputrows = _SplitLines(infile)
+	parser = Parser(inputrows, verbose=args.verbose)
 	parser.Parse()
 	frameset = parser.output
-	print('LOL KEYFRAME SET', frameset)
-	pass
-
-def usage(args):
-	print('USAGE: python {} <input-file> <output-file>'.format(args[0]))
-	exit(1)
+	print('Keyframe data: ', frameset, file=sys.stderr)
+	if args.output:
+		with open(args.output, 'w') as outfile:
+			json.dump(frameset.toJson(), outfile)
+		print('Saved to ' + args.output, file=sys.stderr)
+	else:
+		json.dump(frameset.toJson(), sys.stdout)
 
 if __name__ == '__main__':
-	main(sys.argv)
+	main()

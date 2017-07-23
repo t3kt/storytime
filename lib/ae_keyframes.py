@@ -112,7 +112,7 @@ class AeKeyframeParser(base.Extension):
 	def _GetCompAttrs(self):
 		vals = self.comp.op('./comp_vals')
 		compattrs = {
-			c.name: float(c)
+			c.name.replace('_', ' '): float(c)
 			for c in vals.chans('*')
 		}
 		if self._Verbose:
@@ -246,22 +246,38 @@ class Block:
 			for attr in attrnames
 		}
 
+	def toJson(self):
+		return {
+			'name': self.name,
+			'attrs': self.attrs,
+		}
+
 class KeyframeSet:
 	def __init__(self, attrs=None):
 		if attrs is None:
 			attrs = {}
 		self.attrs = attrs
-		self.width = util.ParseFloat(attrs.get('Source_Width'), 1)
-		self.height = util.ParseFloat(attrs.get('Source_Height'), 1)
+		self.width = util.ParseFloat(attrs.get('Source Width'), 1)
+		self.height = util.ParseFloat(attrs.get('Source Height'), 1)
 		self.pixelscale = 1.0 / min(self.width, self.height)
-		self.fps = util.ParseFloat(attrs.get('Units_Per_Second'), 30)
-		self.fps = float(attrs['Unit_Per_Second']) if attrs else None
+		self.fps = util.ParseFloat(attrs.get('Units Per Second'), 30)
 		self.maxframe = 0
 		self.blocks = []
 
 	def __repr__(self):
 		return 'KeyframeSet(w:{}, h:{}, fps:{}, maxframe:{}, blocks:{})'.format(
 			self.width, self.height, self.fps, self.maxframe, len(self.blocks))
+
+	def toJson(self):
+		return {
+			'attrs': self.attrs,
+			'width': self.width,
+			'height': self.height,
+			'pixelscale': self.pixelscale,
+			'fps': self.fps,
+			'maxframe': self.maxframe,
+			'blocks': [b.toJson() for b in self.blocks]
+		}
 
 def _Clean(n):
 	return tdu.legalName(n)
