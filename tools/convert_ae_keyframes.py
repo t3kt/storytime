@@ -17,7 +17,7 @@ del _initPath
 
 import util
 _ParseFloat = util.ParseFloat
-from ae_keyframes import KeyframeSet, Block
+from ae_keyframes import KeyframeSet, Block, StripNumSuffix, CleanAttrib, IsPixels
 
 def eprint(*args):
 	print(*args, file=sys.stderr)
@@ -126,7 +126,7 @@ class Parser:
 			param = self._Cell(2)
 			# blockname = '{}/{}/{}'.format(group, components, param)
 			# blockname = '{}/{}'.format(components, param)
-			blockname = _StripNumSuffix(param)
+			blockname = StripNumSuffix(param)
 			if not self._GoToNextRow():
 				return
 			block = Block(
@@ -160,12 +160,16 @@ class ConverterTool:
 		self.verbose = args.verbose
 		self.outpath = args.output
 		self.pretty = args.pretty
+		self.infopath = args.info
+		self.channelspath = args.channels
+		self.keyspath = args.keys
 		if args.format in ['json', 'text']:
 			self.format = args.format
 		elif self.outpath:
 			self.format = 'json' if self.outpath.endswith('.json') else 'text'
 		else:
 			self.format = 'json'
+		self.frameset = None
 
 	def Run(self):
 		if self.verbose:
@@ -174,43 +178,118 @@ class ConverterTool:
 			inputrows = _SplitLines(infile)
 		parser = Parser(inputrows, verbose=self.verbose)
 		parser.Parse()
-		frameset = parser.output
-		eprint('Keyframe data: ', frameset)
+		self.frameset = parser.output
+		eprint('Keyframe data: ', self.frameset)
 		if self.outpath:
 			with open(self.outpath, 'w') as outfile:
 				if self.format == 'json':
-					self._WriteJson(frameset, outfile)
+					self._WriteJson(outfile)
 				else:
-					self._WriteText(frameset, outfile)
+					self._WriteText(outfile)
 			eprint('Saved to ', self.outpath)
-		else:
+		if self.infopath:
+			with open(self.infopath, 'w') as outfile:
+				json.dump(self.frameset.infoJson(), outfile, indent='  ')
+			eprint('Wrote info to ', self.infopath)
+		if self.channelspath:
+			with open(self.channelspath, 'w') as outfile:
+				self._WriteChannels(outfile)
+			eprint('Wrote channels to ', self.channelspath)
+		if self.keyspath:
+			with open(self.keyspath, 'w') as outfile:
+				self._WriteKeys(outfile)
+			eprint('Wrote keys to ', self.keyspath)
+		if not any([self.outpath, self.infopath, self.channelspath, not self.keyspath]):
 			if self.format == 'json':
-				self._WriteJson(frameset, sys.stdout)
+				self._WriteJson(sys.stdout)
 			else:
-				self._WriteText(frameset, sys.stdout)
+				self._WriteText(sys.stdout)
 
-	@staticmethod
-	def _WriteText(frameset, out):
-		def writeline(parts):
-			out.write('\t'.join([str(part) for part in parts]))
-			out.write('\n')
-		writeline(['!i', json.dumps(frameset.infoJson())])
-		for block in frameset.blocks:
-			writeline(['!b', block.name])
+	def _WriteText(self, out):
+		_WriteLine(out, ['!i', json.dumps(self.frameset.infoJson())])
+		for block in self.frameset.blocks:
+			_WriteLine(out, ['!b', block.name])
 			for attr, frames in block.attrs.items():
-				writeline(['!a', attr])
+				_WriteLine(out, ['!a', attr])
 				for f, val in frames:
-					writeline(['!f', f, val])
+					_WriteLine(out, ['!f', f, val])
 
-	def _WriteJson(self, frameset, out):
+	def _WriteChannels(self, out):
+		writer = DATWriter(out, [
+			'name', 'id',  'left', 'right', 'default', 'keys',
+			'liner', 'lineg', 'lineb', 'picked', 'display', 'template',
+		])
+		writer.WriteHeader()
+		chanid = 0
+		for block in self.frameset.blocks:
+			for attr, _ in block.attrs.items():
+				chanid += 1
+				writer.AppendRow({
+					'name': '{}:{}'.format(_Clean(block.name), _Clean(CleanAttrib(attr))),
+					'id': chanid,
+					'left': 'hold',
+					'right': 'hold',
+					'default': 0,
+					'keys': 'keys',
+					'liner': 0.1,
+					'lineg': 0.5,
+					'lineb': 0.5,
+					'picked': 1,
+					'display': 1,
+					'template': 0,
+				})
+
+	def _WriteKeys(self, out):
+		writer = DATWriter(out, [
+			'id', 'x', 'y',
+			'inslope', 'inaccel',
+			'expression',
+			'outslope', 'outaccel',
+		])
+		writer.WriteHeader()
+		chanid = 0
+		for block in self.frameset.blocks:
+			for attr, frames in block.attrs.items():
+				chanid += 1
+				valscale = self.frameset.pixelscale if IsPixels(block.name) else 1
+				for f, val in frames:
+					writer.AppendRow({
+						'id': chanid,
+						'x': f + 1,
+						'y': val * valscale,
+						'expression': 'linear()',
+					})
+
+	def _WriteJson(self, out):
 		json.dump(
-			frameset.toJson(), out,
+			self.frameset.toJson(), out,
 			indent='  ' if self.pretty else None)
 
-_numSuffixRx = re.compile(r'\s*#\d+')
-def _StripNumSuffix(s):
-	return _numSuffixRx.sub('', s)
+def _Clean(s):
+	if not s:
+		return ''
+	return s.replace(' ', '_')
 
+class DATWriter:
+	def __init__(self, out, cols):
+		self.out = out
+		self.cols = cols
+
+	def WriteHeader(self):
+		self._WriteLine(self.cols)
+
+	def _WriteLine(self, cells):
+		_WriteLine(self.out, cells)
+
+	def AppendRow(self, cells):
+		self._WriteLine([
+			str(cells.get(self.cols[i], ''))
+			for i in range(len(self.cols))
+		])
+
+def _WriteLine(out, parts):
+		out.write('\t'.join([str(part) for part in parts]))
+		out.write('\n')
 
 def main():
 	parser = argparse.ArgumentParser(description='Convert After Effects keyframe data')
@@ -220,6 +299,15 @@ def main():
 	parser.add_argument(
 		'-o', '--output', type=str,
 		help='Output file')
+	parser.add_argument(
+		'-i', '--info', type=str,
+		help='Info output file')
+	parser.add_argument(
+		'-c', '--channels', type=str,
+		help='Channels output file')
+	parser.add_argument(
+		'-k', '--keys', type=str,
+		help='Keys output file')
 	parser.add_argument(
 		'-f', '--format', type=str, default='auto',
 		choices=['json', 'text', 'auto'],

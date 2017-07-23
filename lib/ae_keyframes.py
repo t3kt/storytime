@@ -36,7 +36,7 @@ class KeyframeLoader(base.Extension):
 	@property
 	def _IsJson(self):
 		path = self._FilePath
-		return path and path.endswith('\.json')
+		return path and path.endswith('.json')
 
 	@property
 	def TableFilePath(self):
@@ -98,7 +98,7 @@ class KeyframeLoader(base.Extension):
 					channels[chanid, 'picked'] = 1
 					channels[chanid, 'display'] = 1
 					channels[chanid, 'template'] = 0
-					valscale = self.Keyframes.pixelscale if _IsPixels(blockname) else 1
+					valscale = self.Keyframes.pixelscale if IsPixels(blockname) else 1
 					for f, val in frames:
 						i = keys.numRows
 						keys.appendRow([])
@@ -144,7 +144,6 @@ class TableReader:
 		else:
 			self.rowcells = [str(c) for c in cells]
 			self.tag = self.rowcells[0]
-		# self._Log('_GoToNextRow() - tag: {}, cells: {}'.format(self.tag, self.rowcells), verbose=True)
 		return self.tag
 
 	def _Cell(self, col):
@@ -263,7 +262,7 @@ class AeKeyframeParser(base.Extension):
 					channels[chanid, 'picked'] = 1
 					channels[chanid, 'display'] = 1
 					channels[chanid, 'template'] = 0
-					valscale = self.Keyframes.pixelscale if _IsPixels(blockname) else 1
+					valscale = self.Keyframes.pixelscale if IsPixels(blockname) else 1
 					for f, val in frames:
 						i = keys.numRows
 						keys.appendRow([])
@@ -374,11 +373,11 @@ class Parser:
 			param = indat[self.row, 2].val
 			# blockname = '{}/{}/{}'.format(group, components, param)
 			# blockname = '{}/{}'.format(components, param)
-			blockname = _StripNumSuffix(param)
+			blockname = StripNumSuffix(param)
 			block = Block(
 				name=blockname,
 				attrnames=[
-					_CleanAttrib(indat[self.row, i].val)
+					CleanAttrib(indat[self.row, i].val)
 					for i in range(2, indat.numCols)
 					if indat[self.row, i].val != ''
 				])
@@ -402,6 +401,41 @@ class Parser:
 			return block
 		finally:
 			self._LogEnd()
+
+class FastKeyframeLoader(base.Extension):
+	def __init__(self, comp):
+		super().__init__(comp)
+		self.animation = comp.op('./animation')
+		self.Keyframes = KeyframeSet()
+
+	def LoadKeyframes(self):
+		self.LogBegin('LoadKeyframes()')
+		try:
+			infopath = self.comp.par.Infofile.eval()
+			if infopath:
+				with open(infopath, 'r') as infile:
+					obj = json.load(infile)
+				self.Keyframes = KeyframeSet.fromJson(obj)
+				self.animation.time.rate = self.Keyframes.fps
+				self.animation.time.end = self.Keyframes.maxframe or 1
+			channels = self.animation.op('./channels')
+			if channels.par.file.eval():
+				self.LogEvent('LoadKeyframes() - loading channels from {}'.format(channels.par.file.eval()))
+				channels.par.loadonstart.pulse()
+				channels.cook(force=True)
+			else:
+				self.LogEvent('LoadKeyframes() - no channels file to load!')
+				channels.clear(keepFirstRow=True)
+			keys = self.animation.op('./keys')
+			if keys.par.file.eval():
+				self.LogEvent('LoadKeyframes() - loading keys from {}'.format(keys.par.file.eval()))
+				keys.par.loadonstart.pulse()
+				keys.cook(force=True)
+			else:
+				self.LogEvent('LoadKeyframes() - no keys file to load!')
+				keys.clear(keepFirstRow=True)
+		finally:
+			self.LogEnd()
 
 class Block:
 	def __init__(
@@ -489,12 +523,12 @@ def _Clean(n):
 	return tdu.legalName(n)
 
 _numSuffixRx = re.compile(r'\s*#\d+')
-def _StripNumSuffix(s):
+def StripNumSuffix(s):
 	return _numSuffixRx.sub('', s)
 
 _pixelsSuffix = re.compile(r' pixels$')
-def _CleanAttrib(s):
+def CleanAttrib(s):
 	return _pixelsSuffix.sub('', s)
 
-def _IsPixels(s):
+def IsPixels(s):
 	return _pixelsSuffix.match(s)
