@@ -1,8 +1,8 @@
 import sys
 import os
-import re
 import json
 import argparse
+import re
 
 def _initPath():
 	basedir = os.path.dirname(__file__)
@@ -29,7 +29,7 @@ def _SplitLines(infile):
 		lines.append(line.split('\t') if line else [])
 	return lines
 
-class Parser:
+class AEKeyframeParser:
 	def __init__(self, inputrows, verbose=False):
 		self.logger = util.IndentedLogger(outfile=sys.stderr)
 		self.inputrows = inputrows
@@ -176,7 +176,7 @@ class ConverterTool:
 			eprint('Reading from ' + self.inpath)
 		with open(self.inpath, 'r') as infile:
 			inputrows = _SplitLines(infile)
-		parser = Parser(inputrows, verbose=self.verbose)
+		parser = AEKeyframeParser(inputrows, verbose=self.verbose)
 		parser.Parse()
 		self.frameset = parser.output
 		eprint('Keyframe data: ', self.frameset)
@@ -206,16 +206,17 @@ class ConverterTool:
 				self._WriteText(sys.stdout)
 
 	def _WriteText(self, out):
-		_WriteLine(out, ['!i', json.dumps(self.frameset.infoJson())])
+		writer = DATWriter(out)
+		writer.AppendRow(['!i', json.dumps(self.frameset.infoJson())])
 		for block in self.frameset.blocks:
-			_WriteLine(out, ['!b', block.name])
+			writer.AppendRow(['!b', block.name])
 			for attr, frames in block.attrs.items():
-				_WriteLine(out, ['!a', attr])
+				writer.AppendRow(['!a', attr])
 				for f, val in frames:
-					_WriteLine(out, ['!f', f, val])
+					writer.AppendRow(['!f', f, val])
 
 	def _WriteChannels(self, out):
-		writer = DATWriter(out, [
+		writer = DATWriter(out, cols=[
 			'name', 'id',  'left', 'right', 'default', 'keys',
 			'liner', 'lineg', 'lineb', 'picked', 'display', 'template',
 		])
@@ -240,7 +241,7 @@ class ConverterTool:
 				})
 
 	def _WriteKeys(self, out):
-		writer = DATWriter(out, [
+		writer = DATWriter(out, cols=[
 			'id', 'x', 'y',
 			'inslope', 'inaccel',
 			'expression',
@@ -266,30 +267,29 @@ class ConverterTool:
 			indent='  ' if self.pretty else None)
 
 def _Clean(s):
-	if not s:
-		return ''
-	return s.replace(' ', '_')
+	return re.sub('[^a-zA-Z0-9_]', '_', s).strip('_') if s else ''
 
 class DATWriter:
-	def __init__(self, out, cols):
+	def __init__(self, out, cols=None):
 		self.out = out
 		self.cols = cols
 
 	def WriteHeader(self):
-		self._WriteLine(self.cols)
+		if self.cols:
+			self._WriteLine(self.cols)
 
 	def _WriteLine(self, cells):
-		_WriteLine(self.out, cells)
+		self.out.write('\t'.join([str(cell) for cell in cells]))
+		self.out.write('\n')
 
 	def AppendRow(self, cells):
-		self._WriteLine([
-			str(cells.get(self.cols[i], ''))
-			for i in range(len(self.cols))
-		])
-
-def _WriteLine(out, parts):
-		out.write('\t'.join([str(part) for part in parts]))
-		out.write('\n')
+		if isinstance(cells, dict):
+			self._WriteLine([
+				str(cells.get(self.cols[i], ''))
+				for i in range(len(self.cols))
+			])
+		else:
+			self._WriteLine(cells)
 
 def main():
 	parser = argparse.ArgumentParser(description='Convert After Effects keyframe data')
