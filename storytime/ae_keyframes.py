@@ -4,12 +4,18 @@ import json
 try:
 	import common_base as base
 except ImportError:
-	import base
+	try:
+		import common.lib.base as base
+	except ImportError:
+		import base
 
 try:
 	import common_util as util
 except ImportError:
-	import util
+	try:
+		import common.lib.util as util
+	except ImportError:
+		import util
 
 if False:
 	from _stubs import *
@@ -61,6 +67,19 @@ class Block:
 			for attr in attrnames or []
 		}
 
+	def applyFrameOffset(self, amount):
+		for frames in self.attrs.values():
+			for frame in frames:
+				frame[0] += amount
+
+	def mergeFrom(self, otherblock: 'Block', validateonly=False):
+		mismatches = set(self.attrs.keys()).symmetric_difference(otherblock.attrs.keys())
+		if mismatches:
+			raise Exception('Invalid block merge! Blocks have different keys: {}'.format(mismatches))
+		if not validateonly:
+			for attr in self.attrs.keys():
+				self.attrs[attr] += otherblock.attrs[attr]
+
 	def __repr__(self):
 		return 'Block({}, attrs:{})'.format(
 			self.name,
@@ -95,6 +114,23 @@ class KeyframeSet:
 		self.fps = fps or util.ParseFloat(attrs.get('Units Per Second'), 30)
 		self.maxframe = maxframe or 0
 		self.blocks = blocks or []
+
+	def applyFrameOffset(self, amount):
+		for block in self.blocks:
+			block.applyFrameOffset(amount)
+
+	def mergeFrom(self, otherFrameset: 'KeyframeSet', validateonly=False):
+		ownblocks = self.getBlocksByName()
+		otherblocks = otherFrameset.getBlocksByName()
+		mismatches = set(ownblocks.keys()).symmetric_difference(otherblocks.keys())
+		if mismatches:
+			raise Exception('Invalid frameset merge! Framesets have different blocks: {}'.format(mismatches))
+		for blockname, ownblock in ownblocks.items():
+			otherblock = otherblocks[blockname]
+			ownblock.mergeFrom(otherblock, validateonly=validateonly)
+
+	def getBlocksByName(self):
+		return {block.name: block for block in self.blocks}
 
 	@classmethod
 	def fromJson(cls, obj):

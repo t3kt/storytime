@@ -1,23 +1,12 @@
 import sys
-import os
 import json
 import argparse
 import re
 
-def _initPath():
-	basedir = os.path.dirname(__file__)
-	for parts in [
-		['..', 'common', 'lib'],
-		['..', 'storytime'],
-	]:
-		sys.path.append(os.path.join(basedir, *parts))
-	pass
-_initPath()
-del _initPath
+import common.lib.util as util
+from storytime.ae_keyframes import KeyframeSet, Block, StripNumSuffix
 
-import util
 _ParseFloat = util.ParseFloat
-from ae_keyframes import KeyframeSet, Block, StripNumSuffix
 
 def eprint(*args):
 	print(*args, file=sys.stderr)
@@ -35,7 +24,7 @@ class AEKeyframeParser:
 		self.inputrows = inputrows
 		self.verbose = verbose
 		self.row = 0
-		self.output = KeyframeSet()
+		self.frameset = KeyframeSet()
 
 	def _FormatEvent(self, event):
 		return '[{}] {}'.format(self.row, event) if event else ''
@@ -93,7 +82,7 @@ class AEKeyframeParser:
 				return
 			if not self._GoToNextRow():
 				return
-			self.output = KeyframeSet(self._ParseCompAttrs())
+			self.frameset = KeyframeSet(self._ParseCompAttrs())
 			self._GoToNextRow()
 			self._LogCurrentRow('Parse() - starting to parse blocks')
 			while self.row < len(self.inputrows):
@@ -107,7 +96,7 @@ class AEKeyframeParser:
 					block = self._ParseNextBlock()
 					if not block:
 						return
-					self.output.blocks.append(block)
+					self.frameset.blocks.append(block)
 					if not self._GoToNextRow():
 						return
 					while not self._Cell(0):
@@ -144,8 +133,8 @@ class AEKeyframeParser:
 					self._Log('_ParseNextBlock() - found blank row in block. stopping')
 					break
 				f = int(self._Cell(1))
-				if f > self.output.maxframe:
-					self.output.maxframe = f
+				if f > self.frameset.maxframe:
+					self.frameset.maxframe = f
 				for i, attr in enumerate(block.attrs):
 					block.attrs[attr].append([f, float(self._Cell(i + 2))])
 				numframes += 1
@@ -178,7 +167,7 @@ class ConverterTool:
 			inputrows = _SplitLines(infile)
 		parser = AEKeyframeParser(inputrows, verbose=self.verbose)
 		parser.Parse()
-		self.frameset = parser.output
+		self.frameset = parser.frameset
 		eprint('Keyframe data: ', self.frameset)
 		if self.outpath:
 			with open(self.outpath, 'w') as outfile:
@@ -257,7 +246,7 @@ class ConverterTool:
 					writer.AppendRow({
 						'id': chanid,
 						'x': f + 1,
-						'y': val, # * valscale,
+						'y': val,  # * valscale,
 						'expression': 'linear()',
 					})
 
@@ -313,7 +302,7 @@ def main():
 		choices=['json', 'text', 'auto'],
 		help='Output format')
 	parser.add_argument(
-		'-v', '--verbose', type=bool, default=False,
+		'-v', '--verbose', action='store_true',
 		help='Verbose logging')
 	parser.add_argument(
 		'-p', '--pretty', type=bool, default=False,
