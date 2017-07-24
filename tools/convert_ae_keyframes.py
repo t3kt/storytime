@@ -8,7 +8,7 @@ def _initPath():
 	basedir = os.path.dirname(__file__)
 	for parts in [
 		['..', 'common', 'lib'],
-		['..', 'lib'],
+		['..', 'storytime'],
 	]:
 		sys.path.append(os.path.join(basedir, *parts))
 	pass
