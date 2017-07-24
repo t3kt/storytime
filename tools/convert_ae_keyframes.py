@@ -1,12 +1,30 @@
 import sys
+import os
 import json
 import argparse
 import re
+import csv
 
 import common.lib.util as util
 from storytime.ae_keyframes import KeyframeSet, Block, StripNumSuffix
 
 _ParseFloat = util.ParseFloat
+
+def _initCsvDATDialect():
+	if 'DAT' not in csv.list_dialects():
+		csv.register_dialect(
+			'DAT',
+			delimiter='\t',
+			doublequote=False,
+			escapechar=None,
+			lineterminator='\n',
+			quoting=csv.QUOTE_NONE)
+
+def _DATDictReader(f, fieldnames=None, **kwargs):
+	_initCsvDATDialect()
+	reader = csv.DictReader(f, fieldnames=fieldnames, dialect='DAT', **kwargs)
+	reader.fieldnames  # loads and parses the first line as a side-effect
+	return reader
 
 def eprint(*args):
 	print(*args, file=sys.stderr)
@@ -18,28 +36,45 @@ def _SplitLines(infile):
 		lines.append(line.split('\t') if line else [])
 	return lines
 
-class AEKeyframeParser:
-	def __init__(self, inputrows, verbose=False):
+def _ArgToRows(inrows):
+	if isinstance(inrows, str):
+		with open(inrows) as f:
+			return _SplitLines(f)
+	elif hasattr(inrows, 'readlines'):
+		return _SplitLines(inrows)
+	else:
+		return inrows
+
+class ParserBase:
+	def __init__(self, verbose=False):
 		self.logger = util.IndentedLogger(outfile=sys.stderr)
-		self.inputrows = inputrows
 		self.verbose = verbose
+
+	def _FormatEvent(self, event):
+		return event or ''
+
+	def _LogBegin(self, event, verbose=False):
+		if not verbose or self.verbose:
+			self.logger.LogBegin('', '', self._FormatEvent(event))
+
+	def _Log(self, event, verbose=False):
+		if not verbose or self.verbose:
+			self.logger.LogEvent('', '', self._FormatEvent(event))
+
+	def _LogEnd(self, event=None, verbose=False):
+		if not verbose or self.verbose:
+			self.logger.LogEnd('', '', self._FormatEvent(event))
+
+
+class AEKeyframeParser(ParserBase):
+	def __init__(self, inrows, verbose=False):
+		super().__init__(verbose=verbose)
 		self.row = 0
-		self.frameset = KeyframeSet()
+		self.inputrows = _ArgToRows(inrows)
+		self.output = KeyframeSet()
 
 	def _FormatEvent(self, event):
 		return '[{}] {}'.format(self.row, event) if event else ''
-
-	def _LogBegin(self, event):
-		if self.verbose:
-			self.logger.LogBegin('', '', self._FormatEvent(event))
-
-	def _Log(self, event):
-		if self.verbose:
-			self.logger.LogEvent('', '', self._FormatEvent(event))
-
-	def _LogEnd(self, event=None):
-		if self.verbose:
-			self.logger.LogEnd('', '', self._FormatEvent(event))
 
 	def _GoToNextRow(self):
 		self.row += 1
@@ -53,7 +88,8 @@ class AEKeyframeParser:
 	def _LogCurrentRow(self, message=None):
 		self._Log('{0} current row : {1!r}'.format(
 			message or '',
-			self.inputrows[self.row]))
+			self.inputrows[self.row]),
+			verbose=True)
 
 	def _Cell(self, col):
 		if not self.rowcells:
@@ -64,7 +100,7 @@ class AEKeyframeParser:
 
 	def _ParseCompAttrs(self):
 		compattrs = {}
-		self._LogBegin('_ParseCompAttrs()')
+		self._LogBegin('_ParseCompAttrs()', verbose=True)
 		try:
 			while self.row < len(self.inputrows):
 				if not self._Cell(1):
@@ -73,7 +109,7 @@ class AEKeyframeParser:
 				self._GoToNextRow()
 			return compattrs
 		finally:
-			self._LogEnd('_ParseCompAttrs() - {}'.format(compattrs))
+			self._LogEnd('_ParseCompAttrs() - {}'.format(compattrs), verbose=True)
 
 	def Parse(self):
 		self._LogBegin('Parse()')
@@ -82,13 +118,13 @@ class AEKeyframeParser:
 				return
 			if not self._GoToNextRow():
 				return
-			self.frameset = KeyframeSet(self._ParseCompAttrs())
+			self.output = KeyframeSet(self._ParseCompAttrs())
 			self._GoToNextRow()
 			self._LogCurrentRow('Parse() - starting to parse blocks')
 			while self.row < len(self.inputrows):
 				if not self._Cell(0):
 					return
-				self._LogBegin('Parse() - scanning row {}...'.format(self.row))
+				self._LogBegin('Parse() - scanning row {}...'.format(self.row), verbose=True)
 				self._LogCurrentRow()
 				try:
 					if self._Cell(0) == 'End of Keyframe Data':
@@ -96,19 +132,19 @@ class AEKeyframeParser:
 					block = self._ParseNextBlock()
 					if not block:
 						return
-					self.frameset.blocks.append(block)
+					self.output.blocks.append(block)
 					if not self._GoToNextRow():
 						return
 					while not self._Cell(0):
 						if self._GoToNextRow():
 							return
 				finally:
-					self._LogEnd()
+					self._LogEnd(verbose=True)
 		finally:
-			self._LogEnd()
+			self._LogEnd(verbose=True)
 
 	def _ParseNextBlock(self):
-		self._LogBegin('_ParseNextBlock()')
+		self._LogBegin('_ParseNextBlock()', verbose=True)
 		try:
 			# group = self._Cell(0)
 			# components = self._Cell(1)
@@ -125,21 +161,81 @@ class AEKeyframeParser:
 					for attr in self.rowcells[2:]
 					if attr
 				])
-			self._Log('_ParseNextBlock() - block name: {}'.format(block.name))
-			self._Log('_ParseNextBlock() - attrs: {}'.format(list(block.attrs.keys())))
+			self._Log('_ParseNextBlock() - block name: {}'.format(block.name), verbose=True)
+			self._Log('_ParseNextBlock() - attrs: {}'.format(list(block.attrs.keys())), verbose=True)
 			numframes = 0
 			while self._GoToNextRow():
 				if not self._Cell(1):
-					self._Log('_ParseNextBlock() - found blank row in block. stopping')
+					self._Log('_ParseNextBlock() - found blank row in block. stopping', verbose=True)
 					break
 				f = int(self._Cell(1))
-				if f > self.frameset.maxframe:
-					self.frameset.maxframe = f
+				if f > self.output.maxframe:
+					self.output.maxframe = f
 				for i, attr in enumerate(block.attrs):
 					block.attrs[attr].append([f, float(self._Cell(i + 2))])
 				numframes += 1
-			self._Log('_ParseNextBlock() - found {} frames'.format(numframes))
+			self._Log('_ParseNextBlock() - found {} frames'.format(numframes), verbose=True)
 			return block
+		finally:
+			self._LogEnd(verbose=True)
+
+class KeyframeChunksParser(ParserBase):
+	def __init__(self, indexpath, verbose=False):
+		super().__init__(verbose=verbose)
+		self.indexpath = indexpath
+		self.chunks = []
+		self.framesets = []
+		self.output = None
+
+	def Parse(self):
+		self._LogBegin('Parse()')
+		try:
+			self._LoadChunkIndex()
+			for chunk in self.chunks:
+				self._ParseChunk(chunk['file'], chunk['startframe'])
+			self._MergeFramesets()
+			return self.output
+		finally:
+			self._LogEnd()
+
+	def _ParseChunk(self, chunkfile, startframe):
+		self._LogBegin('_ParseChunk(file:{}, start:{})'.format(chunkfile, startframe))
+		try:
+				parser = AEKeyframeParser(chunkfile, verbose=self.verbose)
+				parser.Parse()
+				frameset = parser.output
+				if startframe != 0:
+					frameset.applyFrameOffset(startframe)
+				self._Log('_ParseChunk() - {}'.format(frameset))
+				self.framesets.append(frameset)
+		finally:
+			self._LogEnd()
+
+	def _MergeFramesets(self):
+		self._LogBegin('_MergeFramesets()')
+		try:
+			self.output = self.framesets[0]
+			for frameset in self.framesets[1:]:
+				self.output.mergeFrom(frameset, validateonly=True)
+			for frameset in self.framesets[1:]:
+				self.output.mergeFrom(frameset)
+		finally:
+			self._LogEnd()
+
+	def _LoadChunkIndex(self):
+		self._LogBegin('_LoadChunkIndex()')
+		try:
+			indexbasedir = os.path.dirname(self.indexpath)
+			with open(self.indexpath) as indexfile:
+				reader = _DATDictReader(indexfile)
+				for row in reader:
+					chunk = {
+						'file': os.path.join(indexbasedir, row['file']),
+						'startframe': int(row['startframe']),
+					}
+					self._Log('_LoadChunkIndex() - chunk: {}'.format(chunk))
+					self.chunks.append(chunk)
+				self.chunks.sort(key=lambda c: c['startframe'])
 		finally:
 			self._LogEnd()
 
@@ -147,7 +243,12 @@ class ConverterTool:
 	def __init__(self, args):
 		self.inpath = args.inpath
 		self.verbose = args.verbose
-		self.outpath = args.output
+		if args.output == '--':
+			self.dumpoutput = True
+			self.outpath = None
+		else:
+			self.dumpoutput = False
+			self.outpath = args.output
 		self.pretty = args.pretty
 		self.infopath = args.info
 		self.channelspath = args.channels
@@ -161,13 +262,7 @@ class ConverterTool:
 		self.frameset = None
 
 	def Run(self):
-		if self.verbose:
-			eprint('Reading from ' + self.inpath)
-		with open(self.inpath, 'r') as infile:
-			inputrows = _SplitLines(infile)
-		parser = AEKeyframeParser(inputrows, verbose=self.verbose)
-		parser.Parse()
-		self.frameset = parser.frameset
+		self._ReadInput()
 		eprint('Keyframe data: ', self.frameset)
 		if self.outpath:
 			with open(self.outpath, 'w') as outfile:
@@ -188,11 +283,23 @@ class ConverterTool:
 			with open(self.keyspath, 'w') as outfile:
 				self._WriteKeys(outfile)
 			eprint('Wrote keys to ', self.keyspath)
-		if not any([self.outpath, self.infopath, self.channelspath, not self.keyspath]):
+		if self.dumpoutput:
 			if self.format == 'json':
 				self._WriteJson(sys.stdout)
 			else:
 				self._WriteText(sys.stdout)
+
+	def _ReadInput(self):
+		if _IsChunksFile(self.inpath):
+			if self.verbose:
+				eprint('Reading chunked keyframes from index ' + self.inpath)
+			parser = KeyframeChunksParser(self.inpath, verbose=self.verbose)
+		else:
+			if self.verbose:
+				eprint('Reading keyframes from ' + self.inpath)
+			parser = AEKeyframeParser(self.inpath, verbose=self.verbose)
+		parser.Parse()
+		self.frameset = parser.output
 
 	def _WriteText(self, out):
 		writer = DATWriter(out)
@@ -279,6 +386,15 @@ class DATWriter:
 			])
 		else:
 			self._WriteLine(cells)
+
+def _IsChunksFile(path):
+	with open(path) as f:
+		try:
+			reader = _DATDictReader(f)
+			fields = reader.fieldnames
+			return 'file' in fields and 'startframe' in fields
+		except csv.Error:
+			return False
 
 def main():
 	parser = argparse.ArgumentParser(description='Convert After Effects keyframe data')

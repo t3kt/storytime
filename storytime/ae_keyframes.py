@@ -68,9 +68,14 @@ class Block:
 		}
 
 	def applyFrameOffset(self, amount):
-		for frames in self.attrs.values():
+		maxframe = 0
+		for attr, frames in self.attrs.items():
 			for frame in frames:
-				frame[0] += amount
+				newf = frame[0] + amount
+				frame[0] = newf
+				if newf > maxframe:
+					maxframe = newf
+		return maxframe
 
 	def mergeFrom(self, otherblock: 'Block', validateonly=False):
 		mismatches = set(self.attrs.keys()).symmetric_difference(otherblock.attrs.keys())
@@ -117,9 +122,16 @@ class KeyframeSet:
 
 	def applyFrameOffset(self, amount):
 		for block in self.blocks:
-			block.applyFrameOffset(amount)
+			maxframe = block.applyFrameOffset(amount)
+			if maxframe > self.maxframe:
+				self.maxframe = maxframe
 
 	def mergeFrom(self, otherFrameset: 'KeyframeSet', validateonly=False):
+		if self.attrs != otherFrameset.attrs\
+				or self.width != otherFrameset.width\
+				or self.height != otherFrameset.height\
+				or self.fps != otherFrameset.fps:
+			raise Exception('Invalid frameset merge! Attributes differ!')
 		ownblocks = self.getBlocksByName()
 		otherblocks = otherFrameset.getBlocksByName()
 		mismatches = set(ownblocks.keys()).symmetric_difference(otherblocks.keys())
@@ -128,6 +140,8 @@ class KeyframeSet:
 		for blockname, ownblock in ownblocks.items():
 			otherblock = otherblocks[blockname]
 			ownblock.mergeFrom(otherblock, validateonly=validateonly)
+		if not validateonly:
+			self.maxframe = max(self.maxframe, otherFrameset.maxframe)
 
 	def getBlocksByName(self):
 		return {block.name: block for block in self.blocks}
