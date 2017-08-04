@@ -1,4 +1,4 @@
-from storytimedb import *
+from storytime.storytimedb import *
 import pysrt
 from moviepy.editor import VideoFileClip
 import argparse
