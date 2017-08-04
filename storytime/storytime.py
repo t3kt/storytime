@@ -73,6 +73,7 @@ class StoryDbManager(base.Extension):
 			'start_fraction', 'end_fraction',
 			'text',
 		])
+		minduration = self.comp.par.Minsegmentlength.eval()
 		for teller in self.Tellers:
 			if teller.disabled:
 				continue
@@ -80,6 +81,8 @@ class StoryDbManager(base.Extension):
 				if story.disabled:
 					continue
 				for index, segment in enumerate(story.enabledSegments):
+					if segment.duration < minduration:
+						continue
 					if segment.disabled:
 						continue
 					row = dat.numRows
@@ -105,6 +108,7 @@ class StoryPlayer(base.Extension):
 		self.Teller = None  # type: StoryTeller
 		self.ReattachStory()
 		self.timer = self.comp.op('./timer')
+		self.segvals = self.comp.op('./segment_vals')
 
 	def ReattachStory(self):
 		self.Story = _GetDbManager().Db.getStory(
@@ -116,6 +120,23 @@ class StoryPlayer(base.Extension):
 	@property
 	def SegmentCount(self):
 		return len(self.Story.segments) if self.Story else 0
+
+	def FillTimerSegments(self, dat):
+		dat.clear()
+		duration = self.segvals['duration']
+		fadeinsecs = min(self.comp.par.Fadeintime.eval(), duration)
+		fadeoutsecs = min(self.comp.par.Fadeouttime.eval(), duration)
+		if duration <= 0 or not self.comp.par.Enablefade or (fadeinsecs <= 0 and fadeoutsecs <= 0):
+			segs = [duration]
+		else:
+			if (fadeinsecs + fadeoutsecs) > duration:
+				fadeoutsecs = duration - fadeinsecs
+			segs = [
+				fadeinsecs,
+				duration - fadeinsecs - fadeoutsecs,
+				fadeoutsecs
+			]
+		dat.appendCol(['length'] + [s for s in segs if s > 0])
 
 	def GoToSegment(self, index):
 		numsegs = self.SegmentCount
