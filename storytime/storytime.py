@@ -123,31 +123,36 @@ class StoryPlayer(base.Extension):
 
 	def FillTimerSegments(self, dat):
 		dat.clear()
+		# using '_' prefix to indicate that these columns are custom (not for the timer CHOP)
+		dat.appendRow(['length', '_offset_fraction', '_fade_start', '_fade_end'])
 		duration = self.segvals['duration']
 		fadeinsecs = min(self.comp.par.Fadeintime.eval(), duration)
 		fadeoutsecs = min(self.comp.par.Fadeouttime.eval(), duration)
 		if duration <= 0 or not self.comp.par.Enablefade or (fadeinsecs <= 0 and fadeoutsecs <= 0):
-			segs = [duration]
+			dat.appendRow([duration, 0, 1, 1])
 		else:
 			if (fadeinsecs + fadeoutsecs) > duration:
 				fadeoutsecs = duration - fadeinsecs
-			segs = [
-				fadeinsecs,
-				duration - fadeinsecs - fadeoutsecs,
-				fadeoutsecs
-			]
-		dat.appendCol(['length'] + [s for s in segs if s > 0])
+
+			def _addSeg(offset, dur, faderange):
+				if dur > 0:
+					dat.appendRow([dur, offset] + faderange)
+					offset += dur / duration
+				return offset
+
+			offsetfraction = _addSeg(0, fadeinsecs, [0, 1])
+			offsetfraction = _addSeg(offsetfraction, duration - fadeinsecs - fadeoutsecs, [1, 1])
+			_addSeg(offsetfraction, fadeoutsecs, [1, 0])
 
 	def GoToSegment(self, index):
 		numsegs = self.SegmentCount
 		if numsegs == 0:
 			return
-		if index < 0:
-			self.comp.par.Segmentindex = 0
-		elif index >= numsegs:
-			self.comp.par.Segmentindex = numsegs - 1
-		else:
-			self.comp.par.Segmentindex = index
+		index = max(index, 0)
+		index = min(index, numsegs - 1)
+		# self.LogEvent('Playing segment {}'.format(index))
+		self.comp.par.Segmentindex = index
+		self.timer.par.start.pulse()
 
 	def OffsetSegmentIndex(self, offset):
 		self.GoToSegment(self.comp.par.Segmentindex + offset)
