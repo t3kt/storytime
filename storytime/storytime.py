@@ -117,14 +117,6 @@ class StoryPlayer(base.Extension):
 	def SegmentCount(self):
 		return len(self.Story.segments) if self.Story else 0
 
-	@property
-	def VideoFile(self):
-		return self.Story and self.Story.videofile
-
-	@property
-	def Segments(self):
-		return self.Story.enabledSegments if self.Story else []
-
 	def GoToSegment(self, index):
 		numsegs = self.SegmentCount
 		if numsegs == 0:
@@ -144,31 +136,6 @@ class StoryPlayer(base.Extension):
 		if numsegs == 0:
 			return
 		self.GoToSegment(random.randint(0, numsegs - 1))
-
-	def FillStoryVals(self, chop):
-		chop.clear()
-		chop.appendChan('duration').vals = [self.Story.duration if self.Story else 0]
-		chop.appendChan('fps').vals = [self.Story.fps if self.Story else 30]
-		chop.appendChan('segmentcount').vals = [self.SegmentCount]
-
-	def FillSegmentTable(self, dat):
-		dat.clear()
-		dat.appendRow([
-			'start', 'end', 'duration',
-			'start_fraction', 'end_fraction',
-			'text',
-		])
-		for segment in self.Segments:
-			if segment.disabled:
-				continue
-			row = dat.numRows
-			dat.appendRow([])
-			dat[row, 'start'] = segment.start
-			dat[row, 'end'] = segment.end
-			dat[row, 'duration'] = segment.duration
-			dat[row, 'start_fraction'] = segment.startFraction
-			dat[row, 'end_fraction'] = segment.endFraction
-			dat[row, 'text'] = segment.text
 
 	def OnSegmentTimerDone(self):
 		mode = self.comp.par.Playmode.eval()
