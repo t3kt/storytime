@@ -66,6 +66,12 @@ class StoryDb:
 			return None
 		return story.segments[segmentindex]
 
+	@property
+	def allStories(self):
+		for teller in self.tellers.values():
+			for story in teller.stories.values():
+				yield story
+
 class StoryTeller:
 	def __init__(
 			self,

@@ -22,7 +22,7 @@ class StorytimeTool:
 	def addStory(self, args):
 		tellername = args.teller
 		storyname = args.story
-		self.db.addStory(
+		story = self.db.addStory(
 			tellername,
 			storyname,
 			label=args.label,
@@ -30,39 +30,47 @@ class StorytimeTool:
 			subfile=args.subfile,
 		)
 		if args.vidfile:
-			self.loadStoryVideo(tellername, storyname, args.vidfile)
+			self.loadStoryVideo([story], args.vidfile)
 		if args.subfile:
-			self.loadStorySubtitles(tellername, storyname, args.subfile)
+			self.loadStorySubtitles([story], args.subfile)
 
-	def reloadSubtitles(self, args):
-		self.loadStorySubtitles(
-			args.teller,
-			args.story,
-			args.subfile,
-		)
+	@staticmethod
+	def loadStorySubtitles(stories, subfile=None):
+		if subfile and len(stories) > 1:
+			raise Exception('Cannot apply the same sub file to {} stories!'.format(len(stories)))
+		for story in stories:
+			if subfile:
+				story.subfile = subfile
+			subs = pysrt.open(story.subfile)
+			story.segments = [
+				StorySegment(
+					story,
+					start=item.start.ordinal / 1000,
+					end=item.end.ordinal / 1000,
+					text=item.text_without_tags
+				)
+				for item in subs
+			]
 
-	def loadStorySubtitles(self, tellername, storyname, subfile=None):
-		story = self.db.getStory(tellername, storyname, check=True)
-		if subfile:
-			story.subfile = subfile
-		subs = pysrt.open(story.subfile)
-		story.segments = [
-			StorySegment(
-				story,
-				start=item.start.ordinal / 1000,
-				end=item.end.ordinal / 1000,
-				text=item.text_without_tags
-			)
-			for item in subs
-		]
+	@staticmethod
+	def loadStoryVideo(stories, vidfile=None):
+		if vidfile and len(stories) > 1:
+			raise Exception('Cannot apply the same video file to {} stories!'.format(len(stories)))
+		for story in stories:
+			if vidfile:
+				story.videofile = vidfile
+			video = VideoFileClip(story.videofile)
+			story.duration = video.duration
+			story.fps = video.fps
+			story.width = video.w
+			story.height = video.h
 
-	def loadStoryVideo(self, tellername, storyname, videofile=None):
-		story = self.db.getStory(tellername, storyname, check=True)
-		if videofile:
-			story.videofile = videofile
-		video = VideoFileClip(story.videofile)
-		story.duration = video.duration
-		story.fps = video.fps
+	def _getStories(self, args):
+		if args.teller == 'all':
+			return list(self.db.allStories)
+		if args.story == 'all':
+			return list(self.db.getTeller(args.teller, check=True).stories.values())
+		return [self.db.getStory(args.teller, args.story, check=True)]
 
 	def performAction(self, action, args):
 		if action == 'addteller':
@@ -70,7 +78,9 @@ class StorytimeTool:
 		elif action == 'addstory':
 			self.addStory(args)
 		elif action == 'reloadsub':
-			self.reloadSubtitles(args)
+			self.loadStorySubtitles(self._getStories(args), args.subfile)
+		elif action == 'reloadvid':
+			self.loadStoryVideo(self._getStories(args), args.vidfile)
 		else:
 			raise Exception('Unsupported action: {0}'.format(action))
 
@@ -81,7 +91,7 @@ def main():
 		help='Database file path')
 	parser.add_argument(
 		'action', metavar='A', type=str,
-		choices=['addteller', 'addstory', 'rewrite', 'reloadsub'],
+		choices=['addteller', 'addstory', 'rewrite', 'reloadsub', 'reloadvid'],
 		help='Database action')
 	parser.add_argument(
 		'-t', '--teller', metavar='T', type=str,
