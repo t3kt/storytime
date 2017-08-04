@@ -51,7 +51,7 @@ class StoryDbManager(base.Extension):
 
 	def BuildStoryTable(self, dat):
 		dat.clear()
-		dat.appendRow(['id', 'teller', 'story', 'label', 'duration', 'fps', 'segmentcount', 'vidfile'])
+		dat.appendRow(['id', 'teller', 'story', 'label', 'duration', 'fps', 'width', 'height', 'segmentcount', 'vidfile'])
 		for teller in self.Tellers:
 			for story in teller.stories.values():
 				row = dat.numRows
@@ -64,6 +64,8 @@ class StoryDbManager(base.Extension):
 				dat[row, 'fps'] = story.fps
 				dat[row, 'segmentcount'] = len(story.segments)
 				dat[row, 'vidfile'] = story.videofile
+				dat[row, 'width'] = int(story.width)
+				dat[row, 'height'] = int(story.height)
 
 	def BuildSegmentTable(self, dat):
 		dat.clear()
@@ -104,22 +106,13 @@ def _GetDbManager() -> StoryDbManager:
 class StoryPlayer(base.Extension):
 	def __init__(self, comp):
 		super().__init__(comp)
-		self.Story = None  # type: Story
-		self.Teller = None  # type: StoryTeller
-		self.ReattachStory()
 		self.timer = self.comp.op('./timer')
+		self.storyvals = self.comp.op('./story_vals')
 		self.segvals = self.comp.op('./segment_vals')
-
-	def ReattachStory(self):
-		self.Story = _GetDbManager().Db.getStory(
-			tellername=self.comp.par.Teller.eval(),
-			storyname=self.comp.par.Story.eval(),
-			check=False)
-		self.Teller = self.Story and self.Story.teller
 
 	@property
 	def SegmentCount(self):
-		return len(self.Story.segments) if self.Story else 0
+		return int(self.storyvals['segmentcount'])
 
 	def FillTimerSegments(self, dat):
 		dat.clear()
@@ -159,9 +152,13 @@ class StoryPlayer(base.Extension):
 
 	def GoToRandomSegment(self):
 		numsegs = self.SegmentCount
+		# self.LogBegin('GoToRandomSegment() numsegs: {}'.format(numsegs))
+		# try:
 		if numsegs == 0:
 			return
 		self.GoToSegment(random.randint(0, numsegs - 1))
+		# finally:
+		# 	self.LogEnd()
 
 	def OnSegmentTimerDone(self):
 		mode = self.comp.par.Playmode.eval()
