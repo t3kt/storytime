@@ -12,6 +12,9 @@ class StorytimeTool:
 		else:
 			print('DB file not found, creating empty DB: {0}'.format(dbfile))
 
+	def reloadDb(self, dbfile=None):
+		self.db.load(filepath=dbfile)
+
 	def saveDb(self):
 		self.db.save()
 
