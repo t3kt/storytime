@@ -109,6 +109,7 @@ class StoryPlayer(base.Extension):
 		self.timer = self.comp.op('./timer')
 		self.storyvals = self.comp.op('./story_vals')
 		self.segvals = self.comp.op('./segment_vals')
+		self.rand = random.Random(comp.id)
 
 	@property
 	def SegmentCount(self):
@@ -156,7 +157,7 @@ class StoryPlayer(base.Extension):
 		# try:
 		if numsegs == 0:
 			return
-		self.GoToSegment(random.randint(0, numsegs - 1))
+		self.GoToSegment(self.rand.randint(0, numsegs - 1))
 		# finally:
 		# 	self.LogEnd()
 
