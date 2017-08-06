@@ -5472,7 +5472,7 @@
         "more-things-to-do": {
           "name": "more-things-to-do",
           "label": "more-things-to-do",
-          "videofile": "S:/storytime-data/kates-adventures/More Things To Do When Youre Bored-pcHqjcBAfTo.mp4",
+          "videofile": "S:/storytime-data/kates-adventures/More Things To Do When Youre Bored-pcHqjcBAfTo-HAP.mov",
           "subfile": "data/kates-adventures/More Things To Do When Youre Bored-pcHqjcBAfTo_0_en.srt",
           "duration": 166.08,
           "fps": 25.0,
@@ -5858,6 +5858,248 @@
               "start": 162.78,
               "end": 165.979,
               "text": "very much for watching again"
+            }
+          ]
+        },
+        "career-advice": {
+          "name": "career-advice",
+          "label": "career-advice",
+          "videofile": "data/kates-adventures/The Career Advice I Wish Id Gotten-H-_mAurDUwQ.mp4",
+          "subfile": "data/kates-adventures/The Career Advice I Wish Id Gotten-H-_mAurDUwQ_1_en.srt",
+          "duration": 110.9,
+          "fps": 25.0,
+          "width": 1920,
+          "height": 1080,
+          "segments": [
+            {
+              "start": 0.03,
+              "end": 4.14,
+              "text": "today's video is dedicated to the young"
+            },
+            {
+              "start": 2.279,
+              "end": 6.75,
+              "text": "people of the world who are constantly"
+            },
+            {
+              "start": 4.139,
+              "end": 8.669,
+              "text": "getting asked about their future plans"
+            },
+            {
+              "start": 6.75,
+              "end": 10.949,
+              "text": "if you know what you want to do and how"
+            },
+            {
+              "start": 8.669,
+              "end": 12.599,
+              "text": "to get there that is absolutely awesome"
+            },
+            {
+              "start": 10.949,
+              "end": 14.729,
+              "text": "and I wish you the best of luck in"
+            },
+            {
+              "start": 12.599,
+              "end": 16.199,
+              "text": "achieving your goals but there's a lot"
+            },
+            {
+              "start": 14.73,
+              "end": 18.75,
+              "text": "of people who won't know what they want"
+            },
+            {
+              "start": 16.199,
+              "end": 20.49,
+              "text": "to do either and that's okay too"
+            },
+            {
+              "start": 18.75,
+              "end": 23.009,
+              "text": "choosing a career can be a bit like"
+            },
+            {
+              "start": 20.489,
+              "end": 24.538,
+              "text": "ordering in a restaurant at your table"
+            },
+            {
+              "start": 23.01,
+              "end": 26.31,
+              "text": "there's going to be some people who've"
+            },
+            {
+              "start": 24.539,
+              "end": 28.74,
+              "text": "known all day what they want to eat"
+            },
+            {
+              "start": 26.309,
+              "end": 30.629,
+              "text": "while others can read the menu 20 times"
+            },
+            {
+              "start": 28.739,
+              "end": 33.149,
+              "text": "and still not feel too enthused by any"
+            },
+            {
+              "start": 30.629,
+              "end": 35.488,
+              "text": "of the options in a restaurant you'd"
+            },
+            {
+              "start": 33.149,
+              "end": 37.259,
+              "text": "probably just pick something but in this"
+            },
+            {
+              "start": 35.488,
+              "end": 39.57,
+              "text": "case it's a decision that's going to"
+            },
+            {
+              "start": 37.259,
+              "end": 41.82,
+              "text": "affect you over the longer term I've"
+            },
+            {
+              "start": 39.57,
+              "end": 44.308,
+              "text": "been out of school a while now and let"
+            },
+            {
+              "start": 41.82,
+              "end": 46.049,
+              "text": "me share a secret the people who know"
+            },
+            {
+              "start": 44.308,
+              "end": 49.439,
+              "text": "what they want to do can change the mind"
+            },
+            {
+              "start": 46.049,
+              "end": 51.119,
+              "text": "too and it can be so scary for them to"
+            },
+            {
+              "start": 49.439,
+              "end": 53.308,
+              "text": "be living a different life from the one"
+            },
+            {
+              "start": 51.119,
+              "end": 55.32,
+              "text": "that they've pictured for years but it's"
+            },
+            {
+              "start": 53.308,
+              "end": 57.869,
+              "text": "okay as well you don't need to know all"
+            },
+            {
+              "start": 55.32,
+              "end": 60.21,
+              "text": "the answers and you don't need to stick"
+            },
+            {
+              "start": 57.869,
+              "end": 63.119,
+              "text": "to one thing once you've made a decision"
+            },
+            {
+              "start": 60.21,
+              "end": 64.588,
+              "text": "if you need more time to think or want"
+            },
+            {
+              "start": 63.119,
+              "end": 67.17,
+              "text": "to try something different"
+            },
+            {
+              "start": 64.588,
+              "end": 69.329,
+              "text": "that's okay there are people with"
+            },
+            {
+              "start": 67.17,
+              "end": 72.06,
+              "text": "experience who might try to tell you"
+            },
+            {
+              "start": 69.329,
+              "end": 74.658,
+              "text": "what they think but if you disagree or"
+            },
+            {
+              "start": 72.06,
+              "end": 78.15,
+              "text": "it doesn't feel right that's okay too"
+            },
+            {
+              "start": 74.659,
+              "end": 80.7,
+              "text": "because ultimately the decision is yours"
+            },
+            {
+              "start": 78.15,
+              "end": 83.67,
+              "text": "and the only person who knows what's"
+            },
+            {
+              "start": 80.7,
+              "end": 85.409,
+              "text": "right for you is you so if you're going"
+            },
+            {
+              "start": 83.67,
+              "end": 87.57,
+              "text": "through this right now I wish you the"
+            },
+            {
+              "start": 85.409,
+              "end": 90.299,
+              "text": "very best of luck in figuring it out I"
+            },
+            {
+              "start": 87.569,
+              "end": 92.368,
+              "text": "hope this was helpful if anybody wants"
+            },
+            {
+              "start": 90.299,
+              "end": 95.31,
+              "text": "to share any stories down below or any"
+            },
+            {
+              "start": 92.368,
+              "end": 97.109,
+              "text": "tips or helpful advice do pass it down"
+            },
+            {
+              "start": 95.31,
+              "end": 99.18,
+              "text": "in the comments and I look forward to"
+            },
+            {
+              "start": 97.109,
+              "end": 102.259,
+              "text": "reading it thanks very much everybody"
+            },
+            {
+              "start": 99.18,
+              "end": 102.259,
+              "text": "and cheerio"
+            },
+            {
+              "start": 106.599,
+              "end": 109.599,
+              "text": "now"
             }
           ]
         }
