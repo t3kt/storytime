@@ -5864,7 +5864,7 @@
         "career-advice": {
           "name": "career-advice",
           "label": "career-advice",
-          "videofile": "data/kates-adventures/The Career Advice I Wish Id Gotten-H-_mAurDUwQ.mp4",
+          "videofile": "S:/storytime-data/kates-adventures/Career Advice I wish Id Gotten-masked_HAP-AAC.mov",
           "subfile": "data/kates-adventures/The Career Advice I Wish Id Gotten-H-_mAurDUwQ_1_en.srt",
           "duration": 110.9,
           "fps": 25.0,
@@ -6100,6 +6100,12 @@
               "start": 106.599,
               "end": 109.599,
               "text": "now"
+            }
+          ],
+          "enabledranges": [
+            {
+              "start": 0,
+              "end": 90
             }
           ]
         }
