@@ -62,7 +62,7 @@ class StoryDbManager(base.Extension):
 				dat[row, 'label'] = story.label
 				dat[row, 'duration'] = story.duration
 				dat[row, 'fps'] = story.fps
-				dat[row, 'segmentcount'] = len(story.segments)
+				dat[row, 'segmentcount'] = len(story.enabledSegments)
 				dat[row, 'vidfile'] = story.videofile
 				dat[row, 'width'] = int(story.width)
 				dat[row, 'height'] = int(story.height)
