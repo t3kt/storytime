@@ -166,13 +166,20 @@ class StoryPlayer(base.Extension):
 		# finally:
 		# 	self.LogEnd()
 
-	def OnSegmentTimerDone(self):
+	@property
+	def PlayMode(self):
 		modeindex = int(self.settings['Playmode'])
 		playmodes = self._PlayModes
 		if modeindex < 0 or modeindex >= len(playmodes):
-			self._LogEvent('OnSegmentTimerDone() invalid mode index: {0}'.format(modeindex))
+			self._LogEvent('PlayMode() invalid mode index: {0}'.format(modeindex))
 			return
 		mode = playmodes[modeindex]
+		return mode
+
+	def OnSegmentTimerDone(self):
+		mode = self.PlayMode
+		if not mode:
+			return
 		# self._LogEvent('OnSegmentTimerDone() - mode: {0} [index: {1}] modes: {2}'.format(mode, modeindex, playmodes))
 		if mode == 'single':
 			return
