@@ -109,7 +109,12 @@ class StoryPlayer(base.Extension):
 		self.timer = self.comp.op('./timer')
 		self.storyvals = self.comp.op('./story_vals')
 		self.segvals = self.comp.op('./segment_vals')
+		self.settings = self.comp.op('./settings_vals')
 		self.rand = random.Random(comp.id)
+
+	@property
+	def _PlayModes(self):
+		return self.comp.par.Playmode.menuNames
 
 	@property
 	def SegmentCount(self):
@@ -120,9 +125,9 @@ class StoryPlayer(base.Extension):
 		# using '_' prefix to indicate that these columns are custom (not for the timer CHOP)
 		dat.appendRow(['length', '_offset_fraction', '_fade_start', '_fade_end'])
 		duration = self.segvals['duration']
-		fadeinsecs = min(self.comp.par.Fadeintime.eval(), duration)
-		fadeoutsecs = min(self.comp.par.Fadeouttime.eval(), duration)
-		if duration <= 0 or not self.comp.par.Enablefade or (fadeinsecs <= 0 and fadeoutsecs <= 0):
+		fadeinsecs = min(self.settings['Fadeintime'], duration)
+		fadeoutsecs = min(self.settings['Fadeouttime'], duration)
+		if duration <= 0 or not self.settings['Enablefade'] or (fadeinsecs <= 0 and fadeoutsecs <= 0):
 			dat.appendRow([duration, 0, 1, 1])
 		else:
 			if (fadeinsecs + fadeoutsecs) > duration:
@@ -162,7 +167,13 @@ class StoryPlayer(base.Extension):
 		# 	self.LogEnd()
 
 	def OnSegmentTimerDone(self):
-		mode = self.comp.par.Playmode.eval()
+		modeindex = int(self.settings['Playmode'])
+		playmodes = self._PlayModes
+		if modeindex < 0 or modeindex >= len(playmodes):
+			self._LogEvent('OnSegmentTimerDone() invalid mode index: {0}'.format(modeindex))
+			return
+		mode = playmodes[modeindex]
+		# self._LogEvent('OnSegmentTimerDone() - mode: {0} [index: {1}] modes: {2}'.format(mode, modeindex, playmodes))
 		if mode == 'single':
 			return
 		index = self.comp.par.Segmentindex.eval()
