@@ -151,6 +151,8 @@ class StoryPlayer(base.Extension):
 		index = min(index, numsegs - 1)
 		# self.LogEvent('Playing segment {}'.format(index))
 		self.comp.par.Segmentindex = index
+		if self.timer['done'] != 1:
+			self.comp.par.Onsegmentend.pulse()
 		self.timer.par.start.pulse()
 
 	def OffsetSegmentIndex(self, offset):
@@ -181,6 +183,7 @@ class StoryPlayer(base.Extension):
 		if not mode:
 			return
 		# self._LogEvent('OnSegmentTimerDone() - mode: {0} [index: {1}] modes: {2}'.format(mode, modeindex, playmodes))
+		self.comp.par.Onsegmentend.pulse()
 		if mode == 'single':
 			return
 		index = self.comp.par.Segmentindex.eval()
