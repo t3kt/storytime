@@ -1,0 +1,11 @@
+id	teller	story	label	duration	fps	width	height	segmentcount	vidfile
+allyhardesty/reading-old-fb-statuses	allyhardesty	reading-old-fb-statuses	Reading old embarrassing facebook statuses	459.64	29.97002997002997	1280	720	195	data/ally-hardesty/READING OLD EMBARRASSING FACEBOOK STATUSES _ ALLY HARDESTY-bGurwSAvGN8.mp4
+allyhardesty/mermaids	allyhardesty	mermaids	The existence of mermaids conspiracy theory	375.63	29.97002997002997	1280	720	161	data/ally-hardesty/THE EXISTENCE OF MERMAIDS CONSPIRACY THEORY-m0i89yP4HIE.mp4
+thomassanders/am-i-original	thomassanders	am-i-original	Am I original	710.55	29.97002997002997	1280	720	385	data/thomas-sanders/Am I ORIGINAL _ Thomas Sanders-3FguTMzvdsc.mp4
+michaelnoker/extrovert-problems	michaelnoker	extrovert-problems	extrovert-problems	156.22	22.87	1280	720	28	data/michael-noker/Extrovert Problems - Why Do You Hate Me An Elle Woods Moment-LGh5J52bL3A-masked-hapA.mov
+michaelnoker/mental-health	michaelnoker	mental-health	mental-health	250.8	23.0	1280	720	66	data/michael-noker/Thoughts On Mental Health, Depression, Bipolar Disorder,  Anxiety, Fear, Goals, and My Car-kvCFn6ouQZg.mp4
+jens-martens/ikea-nightmare	jens-martens	ikea-nightmare	ikea-nightmare	454.23	25.0	1920	1080	150	data/jens-martens/My IKEA Nightmare  _ Story Time 4-cgbOjjWCLfE.mp4
+kates-adventures/more-things-to-do	kates-adventures	more-things-to-do	more-things-to-do	166.08	25.0	1920	1080	76	S:/storytime-data/kates-adventures/More Things To Do When Youre Bored-pcHqjcBAfTo-HAP.mov
+kates-adventures/career-advice	kates-adventures	career-advice	career-advice	110.9	25.0	1920	1080	38	S:/storytime-data/kates-adventures/Career Advice I wish Id Gotten-masked_HAP-AAC.mov
+marinashutup/your-feminism-sucks	marinashutup	your-feminism-sucks	YOUR FEMINISM SUCKS - Feminist Fridays	388.56	23.976023976023978	1280	720	173	data/marinashutup/YOUR FEMINISM SUCKS _ Feminist Fridays-JNTxyUSV_TA.mp4
+marinashutup/white-passing-poc	marinashutup	white-passing-poc	white-passing-poc	0.0	23.976023976023978	1280	720	154	data/marinashutup/Do White Passing PoC Have Privilege _ Feminist Fridays-uPLjYd9dlew.mp4

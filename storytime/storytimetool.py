@@ -3,6 +3,32 @@ import pysrt
 from moviepy.editor import VideoFileClip
 import argparse
 import os.path
+import csv
+import re
+
+def _initCsvDATDialect():
+	if 'DAT' not in csv.list_dialects():
+		csv.register_dialect(
+			'DAT',
+			delimiter='\t',
+			doublequote=False,
+			escapechar='',
+			lineterminator='\n',
+			quoting=csv.QUOTE_NONE)
+
+def _cleanValueForDAT(val):
+	if val and isinstance(val, str):
+		val = re.sub('[\t\n ]+', ' ', val)
+		return val.replace('"', '')
+	return val
+
+def _cleanDictForDAT(obj):
+	if not obj:
+		return {}
+	return {
+		key: _cleanValueForDAT(val)
+		for key, val in obj.items()
+	}
 
 class StorytimeTool:
 	def __init__(self, dbfile):
@@ -75,6 +101,88 @@ class StorytimeTool:
 			return list(self.db.getTeller(args.teller, check=True).stories.values())
 		return [self.db.getStory(args.teller, args.story, check=True)]
 
+	def writeTellerTable(self, outpath=None):
+		_initCsvDATDialect()
+		outpath = outpath or 'data/_tables/tellers.txt'
+		with open(outpath, 'w') as datfile:
+			writer = csv.DictWriter(datfile, ['name', 'label', 'storycount'], dialect='DAT')
+			writer.writeheader()
+			for teller in self.db.tellers.values():
+				if teller.disabled:
+					continue
+				writer.writerow(_cleanDictForDAT({
+					'name': teller.name,
+					'label': teller.label,
+					'storycount': len(teller.stories),
+				}))
+
+	def writeStoryTable(self, outpath=None):
+		_initCsvDATDialect()
+		outpath = outpath or 'data/_tables/stories.txt'
+		with open(outpath, 'w') as datfile:
+			writer = csv.DictWriter(
+				datfile,
+				['id', 'teller', 'story', 'label', 'duration', 'fps', 'width', 'height', 'segmentcount', 'vidfile'],
+				dialect='DAT')
+			writer.writeheader()
+			for teller in self.db.tellers.values():
+				if teller.disabled:
+					continue
+				for story in teller.stories.values():
+					if story.disabled:
+						continue
+					writer.writerow(_cleanDictForDAT({
+						'id': '{0}/{1}'.format(teller.name, story.name),
+						'teller': teller.name,
+						'story': story.name,
+						'label': story.label,
+						'duration': story.duration,
+						'fps': story.fps,
+						'segmentcount': len(story.enabledSegments),
+						'vidfile': story.videofile,
+						'width': int(story.width),
+						'height': int(story.height),
+					}))
+
+	def writeSegmentTable(self, outpath=None):
+		_initCsvDATDialect()
+		outpath = outpath or 'data/_tables/segments.txt'
+		with open(outpath, 'w') as datfile:
+			writer = csv.DictWriter(
+				datfile,
+				[
+					'id', 'teller', 'story', 'index',
+					'start', 'end', 'duration',
+					'start_fraction', 'end_fraction',
+					'text',
+				],
+				dialect='DAT')
+			writer.writeheader()
+			for teller in self.db.tellers.values():
+				if teller.disabled:
+					continue
+				for story in teller.stories.values():
+					if story.disabled:
+						continue
+					for index, segment in enumerate(story.enabledSegments):
+						writer.writerow(_cleanDictForDAT({
+							'id': '{0}/{1}/{2}'.format(teller.name, story.name, index),
+							'teller': teller.name,
+							'story': story.name,
+							'index': index,
+							'start': segment.start,
+							'end': segment.end,
+							'start_fraction': segment.startFraction,
+							'end_fraction': segment.endFraction,
+							'duration': segment.duration,
+							'text': segment.text,
+						}))
+
+	def writeTables(self, tellerspath=None, storiespath=None, segmentspath=None):
+		self.writeTellerTable(outpath=tellerspath)
+		self.writeStoryTable(outpath=storiespath)
+		self.writeSegmentTable(outpath=segmentspath)
+
 	def performAction(self, action, args):
 		if action == 'addteller':
 			self.addTeller(args)
@@ -84,6 +192,8 @@ class StorytimeTool:
 			self.loadStorySubtitles(self._getStories(args), args.subfile)
 		elif action == 'reloadvid':
 			self.loadStoryVideo(self._getStories(args), args.vidfile)
+		elif action == 'writetables':
+			self.writeTables()
 		else:
 			raise Exception('Unsupported action: {0}'.format(action))
 
@@ -94,7 +204,7 @@ def main():
 		help='Database file path')
 	parser.add_argument(
 		'action', metavar='A', type=str,
-		choices=['addteller', 'addstory', 'rewrite', 'reloadsub', 'reloadvid'],
+		choices=['addteller', 'addstory', 'rewrite', 'reloadsub', 'reloadvid', 'writetables'],
 		help='Database action')
 	parser.add_argument(
 		'-t', '--teller', metavar='T', type=str,
@@ -117,7 +227,8 @@ def main():
 	if args.action != 'rewrite':
 		tool.performAction(args.action, args)
 
-	tool.saveDb()
+	if args.action != 'writetables':
+		tool.saveDb()
 
 if __name__ == '__main__':
 	main()
