@@ -10,3 +10,7 @@ data/**/*.vtt
 *-output-*.*
 CrashAutoSave.toe
 *.dmp
+
+*.xcscmblueprint
+
+*.xcuserstate
