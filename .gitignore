@@ -10,5 +10,12 @@ data/**/*.vtt
 *-output-*.*
 CrashAutoSave.toe
 *.dmp
+<<<<<<< HEAD
 *.xcuserstate
 *.xcscmblueprint
+=======
+
+*.xcscmblueprint
+
+*.xcuserstate
+>>>>>>> master
