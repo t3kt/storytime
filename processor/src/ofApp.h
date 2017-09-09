@@ -12,21 +12,9 @@ using Gesture = ofxFaceTracker::Gesture;
 class Settings {
 public:
   bool includePoints;
-  bool includeImagePoints;
-  bool includeObjectPoints;
-  bool includeMeanObjectPoints;
-
   bool includeMeshes;
-  bool includeImageMeshes;
-  bool includeObjectMeshes;
-  bool includeMeanObjectMeshes;
-
   bool includeHaarRectangle;
-  bool includePosition;
-  bool includeScale;
-  bool includeOrientation;
-  bool includeRotationMatrix;
-
+  bool includeTransform;
   bool includeDirection;
   bool includeFeatures;
   bool includeGestures;

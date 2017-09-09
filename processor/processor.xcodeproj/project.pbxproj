@@ -19,6 +19,8 @@
 		2B8A0931E62F06730F93A3DC /* FDet.cc in Sources */ = {isa = PBXBuildFile; fileRef = C1AABF8FCD25C042A52FED30 /* FDet.cc */; };
 		322E5C251F57C1BD0086BC7F /* ofxCsv.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 322E5C1D1F57C1BD0086BC7F /* ofxCsv.cpp */; };
 		322E5C261F57C1BD0086BC7F /* ofxCsvRow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 322E5C1F1F57C1BD0086BC7F /* ofxCsvRow.cpp */; };
+		32D026241F5A56970044E85E /* TrackingProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32D026221F5A56970044E85E /* TrackingProcessor.cpp */; };
+		32D026261F5A5A6B0044E85E /* JsonOutput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32D026251F5A5A6B0044E85E /* JsonOutput.cpp */; };
 		4F192AEE4692DEE40FF7EFD4 /* Flow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 33DB2F44BD0E3F823187CE2F /* Flow.cpp */; };
 		61B513A7F47D9EFE5871BD00 /* ContourFinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42A21F55FAE355EECF93D358 /* ContourFinder.cpp */; };
 		633CD42DDD30A40C6C040CB3 /* ofxCvGrayscaleImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AEF42B9143EDD41E030396FD /* ofxCvGrayscaleImage.cpp */; };
@@ -130,6 +132,10 @@
 		322E5C1F1F57C1BD0086BC7F /* ofxCsvRow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxCsvRow.cpp; sourceTree = "<group>"; };
 		322E5C201F57C1BD0086BC7F /* ofxCsvRow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxCsvRow.h; sourceTree = "<group>"; };
 		326A339C99C67EFE1154F455 /* fast_math.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = fast_math.hpp; path = ../../openFrameworks/addons/ofxOpenCv/libs/opencv/include/opencv2/core/fast_math.hpp; sourceTree = SOURCE_ROOT; };
+		32D026221F5A56970044E85E /* TrackingProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TrackingProcessor.cpp; sourceTree = "<group>"; };
+		32D026231F5A56970044E85E /* TrackingProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrackingProcessor.h; sourceTree = "<group>"; };
+		32D026251F5A5A6B0044E85E /* JsonOutput.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JsonOutput.cpp; sourceTree = "<group>"; };
+		32D026271F5A5A740044E85E /* JsonOutput.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JsonOutput.h; sourceTree = "<group>"; };
 		3320ED83AA707AC59AC32AA3 /* calib3d.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = calib3d.hpp; path = ../../openFrameworks/addons/ofxOpenCv/libs/opencv/include/opencv2/calib3d/calib3d.hpp; sourceTree = SOURCE_ROOT; };
 		335C4076AC01B08C9666DD8C /* general.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = general.h; path = ../../openFrameworks/addons/ofxOpenCv/libs/opencv/include/opencv2/flann/general.h; sourceTree = SOURCE_ROOT; };
 		33817C4D07358DEBB8EC7FB2 /* vec_distance_detail.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = vec_distance_detail.hpp; path = ../../openFrameworks/addons/ofxOpenCv/libs/opencv/include/opencv2/core/cuda/detail/vec_distance_detail.hpp; sourceTree = SOURCE_ROOT; };
@@ -969,6 +975,10 @@
 				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
 				E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */,
 				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
+				32D026221F5A56970044E85E /* TrackingProcessor.cpp */,
+				32D026231F5A56970044E85E /* TrackingProcessor.h */,
+				32D026251F5A5A6B0044E85E /* JsonOutput.cpp */,
+				32D026271F5A5A740044E85E /* JsonOutput.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -1189,8 +1199,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
+				32D026241F5A56970044E85E /* TrackingProcessor.cpp in Sources */,
 				E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */,
 				B790918779BD4BBDC10300AD /* ETF.cpp in Sources */,
+				32D026261F5A5A6B0044E85E /* JsonOutput.cpp in Sources */,
 				322E5C261F57C1BD0086BC7F /* ofxCsvRow.cpp in Sources */,
 				691CE25C8E2B579CBA7811A4 /* fdog.cpp in Sources */,
 				7F1AD1ED286EC7CE6C136502 /* Calibration.cpp in Sources */,

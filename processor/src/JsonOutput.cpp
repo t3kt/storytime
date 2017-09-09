@@ -1,4 +1,8 @@
-#include "ofApp.h"
+#include "JsonOutput.h"
+
+using Direction = ofxFaceTracker::Direction;
+using Feature = ofxFaceTracker::Feature;
+using Gesture = ofxFaceTracker::Gesture;
 
 ofJson toJson(const ofVec2f& value) {
   return { value.x, value.y };
@@ -129,60 +133,14 @@ ofJson toJson(const ofPolyline& polyline) {
   };
 }
 
-//--------------------------------------------------------------
-void ofApp::setup(){
-  dataFrames = ofJson::array();
-  // TODO: open video file
+bool JsonTrackingOutput::writeFrame(const ofxFaceTracker& tracker) {
+  // TODO
+  return false;
 }
 
-//--------------------------------------------------------------
-void ofApp::update() {
-  video.update();
-  if (video.isFrameNew()) {
-    tracker.update(ofxCv::toCv(video));
-    video.nextFrame();
-  }
-}
-
-//--------------------------------------------------------------
-void ofApp::draw(){
-
-}
-
-void ofApp::writeHeader() {
-
-}
-
-ofJson ofApp::writeFrameObj() {
-  if (!tracker.getFound()) {
-    return {
-      {"missing", true},
-    };
-  }
-  ofJson obj;
-
-  if (settings.includeHaarRectangle && tracker.getHaarFound()) {
-    obj["haar"] = toJson(tracker.getHaarRectangle());
-  }
-
-  if (settings.includeDirection) {
-    obj["dir"] = toJson(tracker.getDirection());
-  }
-
-  if (settings.includeTransform) {
-    obj["pos"] = toJson(tracker.getPosition());
-    obj["scale"] = tracker.getScale();
-    obj["orient"] = toJson(tracker.getOrientation());
-    obj["rot"] = toJson(tracker.getRotationMatrix());
-  }
-
-  if (settings.includeFeatures) {
-    // TODO
-  }
-
-  if (settings.includeGestures) {
-    // TODO
-  }
-
-  return obj;
+void JsonTrackingOutput::close() {
+  ofJson dataObj = {
+    {"frames", _frameObjs},
+  };
+  // TODO: save json
 }
