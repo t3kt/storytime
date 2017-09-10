@@ -23,6 +23,8 @@
 		3249667C1F64ADE80017F29E /* Output.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3249667A1F64ADE80017F29E /* Output.cpp */; };
 		32D026241F5A56970044E85E /* TrackingProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32D026221F5A56970044E85E /* TrackingProcessor.cpp */; };
 		32D026261F5A5A6B0044E85E /* JsonOutput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32D026251F5A5A6B0044E85E /* JsonOutput.cpp */; };
+		32E08D3D1F6605460066CF7B /* ofxTCommon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32E08D371F6605460066CF7B /* ofxTCommon.cpp */; };
+		32E08D3E1F6605460066CF7B /* ofxTJsonIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32E08D3B1F6605460066CF7B /* ofxTJsonIO.cpp */; };
 		4F192AEE4692DEE40FF7EFD4 /* Flow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 33DB2F44BD0E3F823187CE2F /* Flow.cpp */; };
 		61B513A7F47D9EFE5871BD00 /* ContourFinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42A21F55FAE355EECF93D358 /* ContourFinder.cpp */; };
 		633CD42DDD30A40C6C040CB3 /* ofxCvGrayscaleImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AEF42B9143EDD41E030396FD /* ofxCvGrayscaleImage.cpp */; };
@@ -142,6 +144,13 @@
 		32D026231F5A56970044E85E /* TrackingProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrackingProcessor.h; sourceTree = "<group>"; };
 		32D026251F5A5A6B0044E85E /* JsonOutput.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JsonOutput.cpp; sourceTree = "<group>"; };
 		32D026271F5A5A740044E85E /* JsonOutput.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JsonOutput.h; sourceTree = "<group>"; };
+		32E08D361F6605460066CF7B /* ofxTagSet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxTagSet.h; sourceTree = "<group>"; };
+		32E08D371F6605460066CF7B /* ofxTCommon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxTCommon.cpp; sourceTree = "<group>"; };
+		32E08D381F6605460066CF7B /* ofxTCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxTCommon.h; sourceTree = "<group>"; };
+		32E08D391F6605460066CF7B /* ofxTEnums.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxTEnums.h; sourceTree = "<group>"; };
+		32E08D3A1F6605460066CF7B /* ofxTEvents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxTEvents.h; sourceTree = "<group>"; };
+		32E08D3B1F6605460066CF7B /* ofxTJsonIO.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxTJsonIO.cpp; sourceTree = "<group>"; };
+		32E08D3C1F6605460066CF7B /* ofxTJsonIO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxTJsonIO.h; sourceTree = "<group>"; };
 		3320ED83AA707AC59AC32AA3 /* calib3d.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = calib3d.hpp; path = ../../openFrameworks/addons/ofxOpenCv/libs/opencv/include/opencv2/calib3d/calib3d.hpp; sourceTree = SOURCE_ROOT; };
 		335C4076AC01B08C9666DD8C /* general.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = general.h; path = ../../openFrameworks/addons/ofxOpenCv/libs/opencv/include/opencv2/flann/general.h; sourceTree = SOURCE_ROOT; };
 		33817C4D07358DEBB8EC7FB2 /* vec_distance_detail.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = vec_distance_detail.hpp; path = ../../openFrameworks/addons/ofxOpenCv/libs/opencv/include/opencv2/core/cuda/detail/vec_distance_detail.hpp; sourceTree = SOURCE_ROOT; };
@@ -541,6 +550,29 @@
 			path = src;
 			sourceTree = "<group>";
 		};
+		32E08D341F6605050066CF7B /* ofxTCommon */ = {
+			isa = PBXGroup;
+			children = (
+				32E08D351F6605460066CF7B /* src */,
+			);
+			name = ofxTCommon;
+			sourceTree = "<group>";
+		};
+		32E08D351F6605460066CF7B /* src */ = {
+			isa = PBXGroup;
+			children = (
+				32E08D361F6605460066CF7B /* ofxTagSet.h */,
+				32E08D371F6605460066CF7B /* ofxTCommon.cpp */,
+				32E08D381F6605460066CF7B /* ofxTCommon.h */,
+				32E08D391F6605460066CF7B /* ofxTEnums.h */,
+				32E08D3A1F6605460066CF7B /* ofxTEvents.h */,
+				32E08D3B1F6605460066CF7B /* ofxTJsonIO.cpp */,
+				32E08D3C1F6605460066CF7B /* ofxTJsonIO.h */,
+			);
+			name = src;
+			path = addons/ofxTCommon/src;
+			sourceTree = "<group>";
+		};
 		37CF39B443ACB0F86B1351ED /* src */ = {
 			isa = PBXGroup;
 			children = (
@@ -670,6 +702,7 @@
 		6948EE371B920CB800B5AC1A /* local_addons */ = {
 			isa = PBXGroup;
 			children = (
+				32E08D341F6605050066CF7B /* ofxTCommon */,
 			);
 			name = local_addons;
 			sourceTree = "<group>";
@@ -1215,6 +1248,7 @@
 				32D026261F5A5A6B0044E85E /* JsonOutput.cpp in Sources */,
 				691CE25C8E2B579CBA7811A4 /* fdog.cpp in Sources */,
 				7F1AD1ED286EC7CE6C136502 /* Calibration.cpp in Sources */,
+				32E08D3E1F6605460066CF7B /* ofxTJsonIO.cpp in Sources */,
 				61B513A7F47D9EFE5871BD00 /* ContourFinder.cpp in Sources */,
 				1372F15B2CCD412C5BEF2B32 /* Distance.cpp in Sources */,
 				4F192AEE4692DEE40FF7EFD4 /* Flow.cpp in Sources */,
@@ -1225,6 +1259,7 @@
 				01D2AD8D2E3225A882C35F09 /* ObjectFinder.cpp in Sources */,
 				1409B98062FD2DF23BF35722 /* RunningBackground.cpp in Sources */,
 				19A2BBEA8C43DB6DF69212D9 /* Tracker.cpp in Sources */,
+				32E08D3D1F6605460066CF7B /* ofxTCommon.cpp in Sources */,
 				296281B3E7B2FA34269B5FE0 /* Utilities.cpp in Sources */,
 				FA76A2E01CAE35F22ABA43E6 /* Wrappers.cpp in Sources */,
 				A4D0F818388ABFF0A7006B98 /* Expression.cpp in Sources */,
