@@ -2,7 +2,7 @@
 
 #include "ofMain.h"
 #include "ofxFaceTracker.h"
-#include "TrackingProcessor.h"
+#include "Output.h"
 
 ofJson toJson(const ofVec2f& value);
 
@@ -30,11 +30,14 @@ ofJson toJson(const ofPolyline& polyline);
 
 class JsonTrackingOutput : public TrackingOutput {
 public:
-  JsonTrackingOutput(ofFile file) : _file(file) { }
-
-  bool writeFrame(const ofxFaceTracker& tracker) override;
-  void close() override;
+  JsonTrackingOutput(const OutputSettings& settings)
+  : TrackingOutput(settings) {}
+  bool setup() override;
+  void writeVideoInfo(const ofVideoPlayer& video) override;
+  void writeFrame(const ofxFaceTracker& tracker) override;
+  void save() override;
 private:
   ofFile _file;
+  ofJson _infoObj;
   ofJson _frameObjs;
 };

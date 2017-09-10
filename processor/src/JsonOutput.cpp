@@ -133,14 +133,65 @@ ofJson toJson(const ofPolyline& polyline) {
   };
 }
 
-bool JsonTrackingOutput::writeFrame(const ofxFaceTracker& tracker) {
-  // TODO
-  return false;
+bool JsonTrackingOutput::setup() {
+  _file = ofFile(_settings.file, ofFile::WriteOnly);
+  if (!_file.canWrite()) {
+    return false;
+  }
+  return true;
 }
 
-void JsonTrackingOutput::close() {
+void JsonTrackingOutput::writeVideoInfo(const ofVideoPlayer& video) {
+  _infoObj = {
+    {"file", video.getMoviePath()},
+    {"width", video.getWidth()},
+    {"height", video.getHeight()},
+    {"frameCount", video.getTotalNumFrames()},
+    {"duration", video.getDuration()},
+  };
+}
+
+void JsonTrackingOutput::writeFrame(const ofxFaceTracker& tracker) {
+  ofJson obj = {};
+  if (!tracker.getFound()) {
+    obj["missing"] = true;
+  } else {
+
+    if (_settings.haarRectangle && tracker.getHaarFound()) {
+      obj["haar"] = toJson(tracker.getHaarRectangle());
+    }
+
+    if (_settings.direction) {
+      obj["dir"] = toJson(tracker.getDirection());
+    }
+
+    if (_settings.transform) {
+      obj["pos"] = toJson(tracker.getPosition());
+      obj["scale"] = tracker.getScale();
+      obj["orient"] = toJson(tracker.getOrientation());
+      obj["rot"] = toJson(tracker.getRotationMatrix());
+    }
+
+    if (_settings.features) {
+      // TODO
+    }
+
+    if (_settings.gestures) {
+      // TODO
+    }
+  }
+  _frameObjs.push_back(obj);
+}
+
+void JsonTrackingOutput::save() {
   ofJson dataObj = {
     {"frames", _frameObjs},
   };
-  // TODO: save json
+  try {
+    _file << dataObj;
+  } catch (std::exception &e) {
+    ofLogError("JsonTrackingOutput::save()") << "Error saving json: " << e.what();
+  } catch (...) {
+    ofLogError("JsonTrackingOutput::save()") << "Error saving json";
+  }
 }

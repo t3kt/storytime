@@ -1,40 +1,23 @@
 #pragma once
 
 #include "ofMain.h"
-#include "ofxFaceTracker.h"
-#include <set>
-#include <iostream>
-
-using Direction = ofxFaceTracker::Direction;
-using Feature = ofxFaceTracker::Feature;
-using Gesture = ofxFaceTracker::Gesture;
-
-class Settings {
-public:
-  bool includePoints;
-  bool includeMeshes;
-  bool includeHaarRectangle;
-  bool includeTransform;
-  bool includeDirection;
-  bool includeFeatures;
-  bool includeGestures;
-};
+#include "TrackingProcessor.h"
+#include "JsonOutput.h"
+#include <memory>
 
 class ofApp : public ofBaseApp{
 
 	public:
+  ofApp() {}
 		void setup();
 		void update();
 		void draw();
 
 private:
-  void writeHeader();
-  ofJson writeFrameObj();
 
   Settings settings;
   ofVideoPlayer video;
-  ofxFaceTracker tracker;
-  ofFile dataFile;
-  ofJson dataFrames;
+  std::shared_ptr<TrackingProcessor> _processor;
+  std::shared_ptr<TrackingOutput> _output;
 };
 

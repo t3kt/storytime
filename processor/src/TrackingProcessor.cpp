@@ -1,9 +1,30 @@
 #include "TrackingProcessor.h"
 
-void TrackingProcessor::setup(const Settings& settings,
-                              std::shared_ptr<TrackingOutput> output) {
-  _output = output;
-  _output->setup(settings);
+bool TrackingProcessor::setup() {
+  _output = TrackingOutput::createOutput(_settings.output);
+  if (!_output) {
+    return false;
+  }
+  if (!_output->setup()) {
+    return false;
+  }
+  _tracker.setup();
+  _tracker.setRescale(_settings.tracker.rescale);
+  _tracker.setIterations(_settings.tracker.iterations);
+  _tracker.setClamp(_settings.tracker.clamp);
+  _tracker.setTolerance(_settings.tracker.tolerance);
+  _tracker.setAttempts(_settings.tracker.attempts);
+  _tracker.setUseInvisible(_settings.tracker.useInvisible);
+  _tracker.setHaarMinSize(_settings.tracker.haarMinSize);
+  return true;
+}
+
+bool TrackingProcessor::loadMovie(const std::string& path) {
+  if (!_video.load(path)) {
+    return false;
+  }
+  _output->writeVideoInfo(_video);
+  return true;
 }
 
 void TrackingProcessor::close() {
@@ -17,6 +38,11 @@ void TrackingProcessor::close() {
 }
 
 bool TrackingProcessor::processNextFrame() {
-  // TODO
-  return false;
+  if (_video.getIsMovieDone()) {
+    return false;
+  }
+  _video.nextFrame();
+  _tracker.update(ofxCv::toCv(_video));
+  _output->writeFrame(_tracker);
+  return true;
 }

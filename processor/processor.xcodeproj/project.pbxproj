@@ -17,8 +17,10 @@
 		24E3AA0B7B56DE70544DBDD9 /* ofxCvImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AAE6D2697F07EE1412B59538 /* ofxCvImage.cpp */; };
 		296281B3E7B2FA34269B5FE0 /* Utilities.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 267B12AB9013BA295388E0EA /* Utilities.cpp */; };
 		2B8A0931E62F06730F93A3DC /* FDet.cc in Sources */ = {isa = PBXBuildFile; fileRef = C1AABF8FCD25C042A52FED30 /* FDet.cc */; };
-		322E5C251F57C1BD0086BC7F /* ofxCsv.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 322E5C1D1F57C1BD0086BC7F /* ofxCsv.cpp */; };
-		322E5C261F57C1BD0086BC7F /* ofxCsvRow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 322E5C1F1F57C1BD0086BC7F /* ofxCsvRow.cpp */; };
+		324966751F649B250017F29E /* ofxCsv.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 324966711F649B250017F29E /* ofxCsv.cpp */; };
+		324966761F649B250017F29E /* ofxCsvRow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 324966731F649B250017F29E /* ofxCsvRow.cpp */; };
+		324966791F64AB4D0017F29E /* Settings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 324966771F64AB4D0017F29E /* Settings.cpp */; };
+		3249667C1F64ADE80017F29E /* Output.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3249667A1F64ADE80017F29E /* Output.cpp */; };
 		32D026241F5A56970044E85E /* TrackingProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32D026221F5A56970044E85E /* TrackingProcessor.cpp */; };
 		32D026261F5A5A6B0044E85E /* JsonOutput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32D026251F5A5A6B0044E85E /* JsonOutput.cpp */; };
 		4F192AEE4692DEE40FF7EFD4 /* Flow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 33DB2F44BD0E3F823187CE2F /* Flow.cpp */; };
@@ -127,10 +129,14 @@
 		2CE725F31D32582EE132C80F /* all_indices.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = all_indices.h; path = ../../openFrameworks/addons/ofxOpenCv/libs/opencv/include/opencv2/flann/all_indices.h; sourceTree = SOURCE_ROOT; };
 		2F677C571608B8D486A91331 /* ml.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ml.hpp; path = ../../openFrameworks/addons/ofxOpenCv/libs/opencv/include/opencv2/ml/ml.hpp; sourceTree = SOURCE_ROOT; };
 		30D147AD9666248EDE5CE474 /* ofxCvConstants.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxCvConstants.h; path = ../../openFrameworks/addons/ofxOpenCv/src/ofxCvConstants.h; sourceTree = SOURCE_ROOT; };
-		322E5C1D1F57C1BD0086BC7F /* ofxCsv.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxCsv.cpp; sourceTree = "<group>"; };
-		322E5C1E1F57C1BD0086BC7F /* ofxCsv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxCsv.h; sourceTree = "<group>"; };
-		322E5C1F1F57C1BD0086BC7F /* ofxCsvRow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxCsvRow.cpp; sourceTree = "<group>"; };
-		322E5C201F57C1BD0086BC7F /* ofxCsvRow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxCsvRow.h; sourceTree = "<group>"; };
+		324966711F649B250017F29E /* ofxCsv.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ofxCsv.cpp; path = ../../../../openFrameworks/addons/ofxCsv/src/ofxCsv.cpp; sourceTree = "<group>"; };
+		324966721F649B250017F29E /* ofxCsv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ofxCsv.h; path = ../../../../openFrameworks/addons/ofxCsv/src/ofxCsv.h; sourceTree = "<group>"; };
+		324966731F649B250017F29E /* ofxCsvRow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ofxCsvRow.cpp; path = ../../../../openFrameworks/addons/ofxCsv/src/ofxCsvRow.cpp; sourceTree = "<group>"; };
+		324966741F649B250017F29E /* ofxCsvRow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ofxCsvRow.h; path = ../../../../openFrameworks/addons/ofxCsv/src/ofxCsvRow.h; sourceTree = "<group>"; };
+		324966771F64AB4D0017F29E /* Settings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Settings.cpp; sourceTree = "<group>"; };
+		324966781F64AB4D0017F29E /* Settings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Settings.h; sourceTree = "<group>"; };
+		3249667A1F64ADE80017F29E /* Output.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Output.cpp; sourceTree = "<group>"; };
+		3249667B1F64ADE80017F29E /* Output.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Output.h; sourceTree = "<group>"; };
 		326A339C99C67EFE1154F455 /* fast_math.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = fast_math.hpp; path = ../../openFrameworks/addons/ofxOpenCv/libs/opencv/include/opencv2/core/fast_math.hpp; sourceTree = SOURCE_ROOT; };
 		32D026221F5A56970044E85E /* TrackingProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TrackingProcessor.cpp; sourceTree = "<group>"; };
 		32D026231F5A56970044E85E /* TrackingProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrackingProcessor.h; sourceTree = "<group>"; };
@@ -527,10 +533,10 @@
 		322E5C1C1F57C1BD0086BC7F /* src */ = {
 			isa = PBXGroup;
 			children = (
-				322E5C1D1F57C1BD0086BC7F /* ofxCsv.cpp */,
-				322E5C1E1F57C1BD0086BC7F /* ofxCsv.h */,
-				322E5C1F1F57C1BD0086BC7F /* ofxCsvRow.cpp */,
-				322E5C201F57C1BD0086BC7F /* ofxCsvRow.h */,
+				324966711F649B250017F29E /* ofxCsv.cpp */,
+				324966721F649B250017F29E /* ofxCsv.h */,
+				324966731F649B250017F29E /* ofxCsvRow.cpp */,
+				324966741F649B250017F29E /* ofxCsvRow.h */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -979,6 +985,10 @@
 				32D026231F5A56970044E85E /* TrackingProcessor.h */,
 				32D026251F5A5A6B0044E85E /* JsonOutput.cpp */,
 				32D026271F5A5A740044E85E /* JsonOutput.h */,
+				324966771F64AB4D0017F29E /* Settings.cpp */,
+				324966781F64AB4D0017F29E /* Settings.h */,
+				3249667A1F64ADE80017F29E /* Output.cpp */,
+				3249667B1F64ADE80017F29E /* Output.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -1203,7 +1213,6 @@
 				E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */,
 				B790918779BD4BBDC10300AD /* ETF.cpp in Sources */,
 				32D026261F5A5A6B0044E85E /* JsonOutput.cpp in Sources */,
-				322E5C261F57C1BD0086BC7F /* ofxCsvRow.cpp in Sources */,
 				691CE25C8E2B579CBA7811A4 /* fdog.cpp in Sources */,
 				7F1AD1ED286EC7CE6C136502 /* Calibration.cpp in Sources */,
 				61B513A7F47D9EFE5871BD00 /* ContourFinder.cpp in Sources */,
@@ -1211,6 +1220,8 @@
 				4F192AEE4692DEE40FF7EFD4 /* Flow.cpp in Sources */,
 				FBA78942F1EC12F081C99367 /* Helpers.cpp in Sources */,
 				F1CD51803CDE2A2EAB22633D /* Kalman.cpp in Sources */,
+				324966751F649B250017F29E /* ofxCsv.cpp in Sources */,
+				324966761F649B250017F29E /* ofxCsvRow.cpp in Sources */,
 				01D2AD8D2E3225A882C35F09 /* ObjectFinder.cpp in Sources */,
 				1409B98062FD2DF23BF35722 /* RunningBackground.cpp in Sources */,
 				19A2BBEA8C43DB6DF69212D9 /* Tracker.cpp in Sources */,
@@ -1223,13 +1234,14 @@
 				E4DF01C9CB1E947E20B7460E /* FCheck.cc in Sources */,
 				2B8A0931E62F06730F93A3DC /* FDet.cc in Sources */,
 				C0ADE369D859AF4FCC507DAB /* IO.cc in Sources */,
+				3249667C1F64ADE80017F29E /* Output.cpp in Sources */,
 				AD2E9B96F4E5EA767FE746A0 /* Patch.cc in Sources */,
 				B4D494959B589BA388F49ED6 /* PAW.cc in Sources */,
 				B79E7B912F0EFD3715763F0B /* PDM.cc in Sources */,
 				23E11DCF07DC6E7424696D89 /* Tracker.cc in Sources */,
-				322E5C251F57C1BD0086BC7F /* ofxCsv.cpp in Sources */,
 				F5FCFB7B91DC2F2B6382FDFE /* ofxCvColorImage.cpp in Sources */,
 				0109C10BA1AEC14D48F4B63F /* ofxCvContourFinder.cpp in Sources */,
+				324966791F64AB4D0017F29E /* Settings.cpp in Sources */,
 				FB8154222090E1A777794C88 /* ofxCvFloatImage.cpp in Sources */,
 				633CD42DDD30A40C6C040CB3 /* ofxCvGrayscaleImage.cpp in Sources */,
 				24666B72118D905E6B13F3DE /* ofxCvHaarFinder.cpp in Sources */,
