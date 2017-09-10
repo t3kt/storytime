@@ -1,18 +1,39 @@
 #pragma once
 
 #include <string>
+#include <iostream>
+#include <ofJson.h>
 
 enum class OutputFormat {
   UNKNOWN,
   JSON,
 };
 
+OutputFormat stringToFormat(const std::string& value);
+
 std::string formatToString(OutputFormat value);
 
-class OutputSettings {
+std::ostream& operator<<(std::ostream& os,
+                         const OutputFormat& value);
+
+class SettingsBase {
+public:
+  virtual ofJson toJson() const = 0;
+  virtual void readJson(const ofJson& obj) = 0;
+
+  std::string toString() const;
+};
+
+std::ostream& operator<<(std::ostream& os,
+                         const SettingsBase& value);
+
+class OutputSettings : public SettingsBase {
 public:
   OutputSettings()
   : format(OutputFormat::JSON) {}
+
+  ofJson toJson() const override;
+  void readJson(const ofJson& obj) override;
 
   OutputFormat format;
   std::string file;
