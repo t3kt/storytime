@@ -3,25 +3,20 @@
 #include <string>
 #include <iostream>
 #include <ofJson.h>
+#include "ofxTJsonIO.h"
 
 enum class OutputFormat {
   UNKNOWN,
   JSON,
 };
 
-OutputFormat stringToFormat(const std::string& value);
-
-std::string formatToString(OutputFormat value);
-
 std::ostream& operator<<(std::ostream& os,
                          const OutputFormat& value);
 
-class SettingsBase {
+class SettingsBase
+: public ofxTCommon::JsonReadable
+, public ofxTCommon::JsonWritable {
 public:
-  virtual ofJson toJson() const = 0;
-  virtual void readJson(const ofJson& obj) = 0;
-
-  std::string toString() const;
 };
 
 std::ostream& operator<<(std::ostream& os,
@@ -46,7 +41,7 @@ public:
   bool gestures;
 };
 
-class TrackerSettings {
+class TrackerSettings : public SettingsBase {
 public:
   TrackerSettings()
   : rescale(1)
@@ -58,6 +53,9 @@ public:
   , haarMinSize(30)
   { }
 
+  ofJson toJson() const override;
+  void readJson(const ofJson& obj) override;
+
   float rescale;
   int iterations;
   float clamp;
@@ -67,8 +65,12 @@ public:
   float haarMinSize;
 };
 
-class Settings {
+class Settings : public SettingsBase {
 public:
+
+  ofJson toJson() const override;
+  void readJson(const ofJson& obj) override;
+
   OutputSettings output;
   TrackerSettings tracker;
 };
