@@ -6,6 +6,8 @@ data/**/*.m4a
 data/**/*.wav
 data/**/*.mov
 data/**/*.vtt
+data/**/*.psd
+data/[a-z]*/
 *.pyc
 *-output-*.*
 CrashAutoSave.toe
@@ -14,3 +16,7 @@ CrashAutoSave.toe
 *.xcscmblueprint
 
 *.xcuserstate
+
+*.xcbkptlist
+
+processor/testing/*
