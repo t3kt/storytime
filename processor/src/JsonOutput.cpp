@@ -20,27 +20,31 @@ ofJson JsonUtil::toJson(const ofPolyline& polyline) {
 }
 
 bool JsonTrackingOutput::setup() {
-  _file = ofFile(_settings.file, ofFile::WriteOnly);
+  _file.openFromCWD(_settings.file, ofFile::WriteOnly, false);
   if (!_file.canWrite()) {
     return false;
   }
+  _file << "{\n";
   return true;
 }
 
 void JsonTrackingOutput::writeVideoInfo(const ofVideoPlayer& video) {
-  _infoObj = {
+  ofJson obj = {
     {"file", video.getMoviePath()},
     {"width", video.getWidth()},
     {"height", video.getHeight()},
     {"frameCount", video.getTotalNumFrames()},
     {"duration", video.getDuration()},
   };
+  _file << "\"videoInfo\": " << obj << ",\n";
+  _file << "\"frames\": [\n";
 }
 
 void JsonTrackingOutput::writeFrame(const ofxFaceTracker& tracker) {
   ofJson obj = {};
   if (!tracker.getFound()) {
     obj["missing"] = true;
+    _file << obj << "\n";
   } else {
 
     if (_settings.haarRectangle && tracker.getHaarFound()) {
@@ -65,20 +69,13 @@ void JsonTrackingOutput::writeFrame(const ofxFaceTracker& tracker) {
     if (_settings.gestures) {
       // TODO
     }
+    _file << obj << ",\n";
   }
 //  ofLogVerbose() << "Wrote frame: " << obj.dump();
-  _frameObjs.push_back(obj);
 }
 
-void JsonTrackingOutput::save() {
-  ofJson dataObj = {
-    {"frames", _frameObjs},
-  };
-  try {
-    _file << dataObj;
-  } catch (std::exception &e) {
-    ofLogError("JsonTrackingOutput::save()") << "Error saving json: " << e.what();
-  } catch (...) {
-    ofLogError("JsonTrackingOutput::save()") << "Error saving json";
-  }
+void JsonTrackingOutput::close() {
+  _file << "]\n";
+  _file << "}";
+  _file.close();
 }

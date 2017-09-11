@@ -17,9 +17,7 @@ public:
   bool setup() override;
   void writeVideoInfo(const ofVideoPlayer& video) override;
   void writeFrame(const ofxFaceTracker& tracker) override;
-  void save() override;
+  void close() override;
 private:
   ofFile _file;
-  ofJson _infoObj;
-  ofJson _frameObjs;
 };
