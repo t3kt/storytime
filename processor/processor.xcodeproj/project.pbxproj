@@ -25,6 +25,7 @@
 		32D026261F5A5A6B0044E85E /* JsonOutput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32D026251F5A5A6B0044E85E /* JsonOutput.cpp */; };
 		32E08D3D1F6605460066CF7B /* ofxTCommon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32E08D371F6605460066CF7B /* ofxTCommon.cpp */; };
 		32E08D3E1F6605460066CF7B /* ofxTJsonIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32E08D3B1F6605460066CF7B /* ofxTJsonIO.cpp */; };
+		32E08D411F6635140066CF7B /* TrackerData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32E08D3F1F6635140066CF7B /* TrackerData.cpp */; };
 		4F192AEE4692DEE40FF7EFD4 /* Flow.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 33DB2F44BD0E3F823187CE2F /* Flow.cpp */; };
 		61B513A7F47D9EFE5871BD00 /* ContourFinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 42A21F55FAE355EECF93D358 /* ContourFinder.cpp */; };
 		633CD42DDD30A40C6C040CB3 /* ofxCvGrayscaleImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AEF42B9143EDD41E030396FD /* ofxCvGrayscaleImage.cpp */; };
@@ -151,6 +152,8 @@
 		32E08D3A1F6605460066CF7B /* ofxTEvents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxTEvents.h; sourceTree = "<group>"; };
 		32E08D3B1F6605460066CF7B /* ofxTJsonIO.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxTJsonIO.cpp; sourceTree = "<group>"; };
 		32E08D3C1F6605460066CF7B /* ofxTJsonIO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxTJsonIO.h; sourceTree = "<group>"; };
+		32E08D3F1F6635140066CF7B /* TrackerData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TrackerData.cpp; sourceTree = "<group>"; };
+		32E08D401F6635140066CF7B /* TrackerData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrackerData.h; sourceTree = "<group>"; };
 		3320ED83AA707AC59AC32AA3 /* calib3d.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = calib3d.hpp; path = ../../openFrameworks/addons/ofxOpenCv/libs/opencv/include/opencv2/calib3d/calib3d.hpp; sourceTree = SOURCE_ROOT; };
 		335C4076AC01B08C9666DD8C /* general.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = general.h; path = ../../openFrameworks/addons/ofxOpenCv/libs/opencv/include/opencv2/flann/general.h; sourceTree = SOURCE_ROOT; };
 		33817C4D07358DEBB8EC7FB2 /* vec_distance_detail.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = vec_distance_detail.hpp; path = ../../openFrameworks/addons/ofxOpenCv/libs/opencv/include/opencv2/core/cuda/detail/vec_distance_detail.hpp; sourceTree = SOURCE_ROOT; };
@@ -1022,6 +1025,8 @@
 				324966781F64AB4D0017F29E /* Settings.h */,
 				3249667A1F64ADE80017F29E /* Output.cpp */,
 				3249667B1F64ADE80017F29E /* Output.h */,
+				32E08D3F1F6635140066CF7B /* TrackerData.cpp */,
+				32E08D401F6635140066CF7B /* TrackerData.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -1269,6 +1274,7 @@
 				E4DF01C9CB1E947E20B7460E /* FCheck.cc in Sources */,
 				2B8A0931E62F06730F93A3DC /* FDet.cc in Sources */,
 				C0ADE369D859AF4FCC507DAB /* IO.cc in Sources */,
+				32E08D411F6635140066CF7B /* TrackerData.cpp in Sources */,
 				3249667C1F64ADE80017F29E /* Output.cpp in Sources */,
 				AD2E9B96F4E5EA767FE746A0 /* Patch.cc in Sources */,
 				B4D494959B589BA388F49ED6 /* PAW.cc in Sources */,

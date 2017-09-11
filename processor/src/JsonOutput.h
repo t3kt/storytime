@@ -4,29 +4,11 @@
 #include "ofxFaceTracker.h"
 #include "Output.h"
 
-ofJson toJson(const ofVec2f& value);
-
-ofJson toJson(const ofVec3f& value);
-
-ofJson toJson(const ofVec4f& value);
-
-ofJson toJson(const glm::vec2& value);
-
-ofJson toJson(const glm::vec3& value);
-
-ofJson toJson(const glm::vec4& value);
-
-ofJson toJson(const ofMatrix4x4& value);
-
-ofJson toJson(const ofRectangle& value);
-
-ofJson toJson(ofxFaceTracker::Direction value);
-
-ofJson toJson(ofxFaceTracker::Feature value);
-
-ofJson toJson(ofxFaceTracker::Gesture value);
-
-ofJson toJson(const ofPolyline& polyline);
+namespace ofxTCommon {
+  namespace JsonUtil {
+    ofJson toJson(const ofPolyline& polyline);
+  }
+}
 
 class JsonTrackingOutput : public TrackingOutput {
 public:
