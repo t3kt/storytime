@@ -40,7 +40,7 @@ ofJson OutputSettings::toJson() const {
 void OutputSettings::readJson(const ofJson& obj) {
   JsonUtil::assertIsObject(obj);
   format = JsonUtil::enumFromJson<OutputFormat>(obj["format"]);
-  file = JsonUtil::fromJsonField<std::string>(obj, "file");
+  file = JsonUtil::fromJsonField(obj, "file", file);
   points = JsonUtil::fromJsonField(obj, "points", false);
   meshes = JsonUtil::fromJsonField(obj, "meshes", false);
   haarRectangle = JsonUtil::fromJsonField(obj, "haarRectangle", false);

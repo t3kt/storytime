@@ -19,3 +19,5 @@ CrashAutoSave.toe
 *.xcuserstate
 
 processor/testing/
+
+*.xcbkptlist
