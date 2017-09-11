@@ -1,5 +1,6 @@
 #include "ofMain.h"
 #include "ofApp.h"
+#include "ofAppGLFWWindow.h"
 #include <iostream>
 #include <string>
 #include "Settings.h"
@@ -37,7 +38,8 @@ bool loadSettingsFile(const std::string& path, Settings* settings) {
 }
 
 int main(int argc, const char **argv){
-//	ofSetupOpenGL(1024,768,OF_WINDOW);			// <-------- setup the GL context
+  ofAppGLFWWindow window;
+	ofSetupOpenGL(&window, 1024,768,OF_WINDOW);			// <-------- setup the GL context
 //
 //	// this kicks off the running of my app
 //	// can be OF_WINDOW or OF_FULLSCREEN
@@ -54,6 +56,7 @@ int main(int argc, const char **argv){
 //    "/Users/tekt/creations/storytime/processor/testing/output.json",
 //  };
 //  argv = DEBUG_ARGV;
+//  argc = 4;
 
   // END DEBUG STUFF!!!!!!!
 
@@ -75,33 +78,35 @@ int main(int argc, const char **argv){
     settings.output.file = argv[3];
   }
 
-  if (argc > 3) {
+  if (argc > 4) {
     return usage(argv[0]);
   }
 
   ofLogNotice() << "Settings:\n" << settings.toJson().dump(2);
   ofLogNotice() << "Video file: " << videoPath;
   ofLogNotice() << "Output file: " << settings.output.file;
-  return 0;
-  TrackingProcessor processor(settings);
-  if (!processor.setup()) {
-    ofLogFatalError() << "Error during tracking processor setup!";
-    return 1;
-  }
-  if (!processor.loadMovie(videoPath)) {
-    ofLogFatalError() << "Error loading video!";
-    return 1;
-  }
 
-  for (;;) {
-    ofLogVerbose() << "Processing next frame..";
-    if (!processor.processNextFrame()) {
-      ofLogNotice() << "Finished processing frames";
-      break;
-    }
-  }
-  processor.close();
-  ofLogNotice() << "Finished!";
+  ofRunApp(new ofApp(settings, videoPath));
+
+//  TrackingProcessor processor;
+//  if (!processor.setup(settings)) {
+//    ofLogFatalError() << "Error during tracking processor setup!";
+//    return 1;
+//  }
+//  if (!processor.loadMovie(videoPath)) {
+//    ofLogFatalError() << "Error loading video!";
+//    return 1;
+//  }
+//
+//  for (;;) {
+//    ofLogVerbose() << "Processing next frame..";
+//    if (!processor.processNextFrame()) {
+//      ofLogNotice() << "Finished processing frames";
+//      break;
+//    }
+//  }
+//  processor.close();
+//  ofLogNotice() << "Finished!";
   return 0;
 }
 

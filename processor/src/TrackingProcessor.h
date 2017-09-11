@@ -8,18 +8,18 @@
 
 class TrackingProcessor {
 public:
-  TrackingProcessor(const Settings& settings)
-  : _settings(settings) {}
-
-  bool setup();
+  bool setup(Settings settings);
 
   bool loadMovie(const std::string& path);
 
+  bool processNextFrame();
+
   void close();
 
-  bool processNextFrame();
+  ofVideoPlayer& video() { return _video; }
+  ofxFaceTracker& tracker() { return _tracker; }
 private:
-  const Settings& _settings;
+  Settings _settings;
   ofVideoPlayer _video;
   ofxFaceTracker _tracker;
   std::shared_ptr<TrackingOutput> _output;

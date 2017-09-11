@@ -2,22 +2,20 @@
 
 #include "ofMain.h"
 #include "TrackingProcessor.h"
-#include "JsonOutput.h"
-#include <memory>
 
-class ofApp : public ofBaseApp{
+class ofApp : public ofBaseApp {
+public:
+  ofApp(Settings settings, std::string videoPath)
+  : _settings(settings)
+  , _videoPath(videoPath) {}
 
-	public:
-  ofApp() {}
-		void setup();
-		void update();
-		void draw();
+  void setup();
+  void update();
+  void draw();
 
 private:
-
-  Settings settings;
-  ofVideoPlayer video;
-  std::shared_ptr<TrackingProcessor> _processor;
-  std::shared_ptr<TrackingOutput> _output;
+  std::string _videoPath;
+  Settings _settings;
+  TrackingProcessor _processor;
 };
 

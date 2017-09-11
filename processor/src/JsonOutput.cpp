@@ -28,6 +28,10 @@ bool JsonTrackingOutput::setup() {
   return true;
 }
 
+void JsonTrackingOutput::writeSettings(const Settings& settings) {
+  _file << "\"settings\": " << settings.toJson().dump(2) << ",\n";
+}
+
 void JsonTrackingOutput::writeVideoInfo(const ofVideoPlayer& video) {
   ofJson obj = {
     {"file", video.getMoviePath()},
@@ -36,12 +40,12 @@ void JsonTrackingOutput::writeVideoInfo(const ofVideoPlayer& video) {
     {"frameCount", video.getTotalNumFrames()},
     {"duration", video.getDuration()},
   };
-  _file << "\"videoInfo\": " << obj << ",\n";
+  _file << "\"videoInfo\": " << obj.dump(2) << ",\n";
   _file << "\"frames\": [\n";
 }
 
 void JsonTrackingOutput::writeFrame(const ofxFaceTracker& tracker) {
-  ofJson obj = {};
+  ofJson obj = ofJson::object();
   if (!tracker.getFound()) {
     obj["missing"] = true;
     _file << obj << "\n";
@@ -70,6 +74,12 @@ void JsonTrackingOutput::writeFrame(const ofxFaceTracker& tracker) {
       // TODO
     }
     _file << obj << ",\n";
+  }
+  if (_framesSinceFlush > 30) {
+    _file.flush();
+    _framesSinceFlush = 0;
+  } else {
+    _framesSinceFlush++;
   }
 //  ofLogVerbose() << "Wrote frame: " << obj.dump();
 }

@@ -12,6 +12,7 @@ public:
   : _settings(settings) {}
 
   virtual bool setup() { return true; }
+  virtual void writeSettings(const Settings& settings) {}
   virtual void writeVideoInfo(const ofVideoPlayer& video) {}
   virtual void writeFrame(const ofxFaceTracker& tracker) = 0;
   virtual void save() {}

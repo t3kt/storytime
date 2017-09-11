@@ -1,6 +1,7 @@
 #include "TrackingProcessor.h"
 
-bool TrackingProcessor::setup() {
+bool TrackingProcessor::setup(Settings settings) {
+  _settings = settings;
   ofLogNotice() << "TrackingProcessor::setup() settings: " << _settings;
   _output = TrackingOutput::createOutput(_settings.output);
   if (!_output) {
@@ -9,6 +10,7 @@ bool TrackingProcessor::setup() {
   if (!_output->setup()) {
     return false;
   }
+  _output->writeSettings(_settings);
   _tracker.setup();
   _tracker.setRescale(_settings.tracker.rescale);
   _tracker.setIterations(_settings.tracker.iterations);
@@ -41,6 +43,10 @@ void TrackingProcessor::close() {
 }
 
 bool TrackingProcessor::processNextFrame() {
+  _video.update();
+  if (!_video.isFrameNew()) {
+    return true;
+  }
   ofLogNotice() << "TrackingProcessor - processing frame: " << _video.getCurrentFrame() << " / " << _video.getTotalNumFrames();
   if (_video.getIsMovieDone()) {
     ofLogNotice() << "TrackingProcessor - movie is done!";

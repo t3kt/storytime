@@ -15,9 +15,11 @@ public:
   JsonTrackingOutput(const OutputSettings& settings)
   : TrackingOutput(settings) {}
   bool setup() override;
+  void writeSettings(const Settings& settings) override;
   void writeVideoInfo(const ofVideoPlayer& video) override;
   void writeFrame(const ofxFaceTracker& tracker) override;
   void close() override;
 private:
   ofFile _file;
+  int _framesSinceFlush;
 };
