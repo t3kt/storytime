@@ -41,9 +41,9 @@ void TrackingProcessor::close() {
 }
 
 bool TrackingProcessor::processNextFrame() {
-  ofLogNotice() << "TrackingProcessor::processNextFrame()";
+  ofLogNotice() << "TrackingProcessor - processing frame: " << _video.getCurrentFrame() << " / " << _video.getTotalNumFrames();
   if (_video.getIsMovieDone()) {
-    ofLogNotice() << "TrackingProcessor::processNextFrame() - movie is done!";
+    ofLogNotice() << "TrackingProcessor - movie is done!";
     return false;
   }
   _video.nextFrame();

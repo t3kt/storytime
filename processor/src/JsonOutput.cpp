@@ -66,6 +66,7 @@ void JsonTrackingOutput::writeFrame(const ofxFaceTracker& tracker) {
       // TODO
     }
   }
+//  ofLogVerbose() << "Wrote frame: " << obj.dump();
   _frameObjs.push_back(obj);
 }
 
