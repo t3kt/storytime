@@ -47,13 +47,13 @@ int main(int argc, const char **argv){
 
   // DEBUG STUFF !!!!!!!!!
 
-  const char* DEBUG_ARGV[] = {
-    "DBG-COMMAND",
-    "/Users/tekt/creations/storytime/processor/testing/settings.json",
-    "/Users/tekt/creations/storytime/processor/testing/career-advice.mp4",
-    "/Users/tekt/creations/storytime/processor/testing/output.json",
-  };
-  argv = DEBUG_ARGV;
+//  const char* DEBUG_ARGV[] = {
+//    "DBG-COMMAND",
+//    "/Users/tekt/creations/storytime/processor/testing/settings.json",
+//    "/Users/tekt/creations/storytime/processor/testing/career-advice.mp4",
+//    "/Users/tekt/creations/storytime/processor/testing/output.json",
+//  };
+//  argv = DEBUG_ARGV;
 
   // END DEBUG STUFF!!!!!!!
 
