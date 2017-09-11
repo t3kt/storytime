@@ -45,7 +45,7 @@ void JsonTrackingOutput::writeVideoInfo(const ofVideoPlayer& video) {
 }
 
 void JsonTrackingOutput::writeFrame(const ofxFaceTracker& tracker) {
-  ofJson obj = ofJson::object();
+  auto obj = ofJson::object();
   if (!tracker.getFound()) {
     obj["missing"] = true;
     _file << obj << "\n";
@@ -56,7 +56,7 @@ void JsonTrackingOutput::writeFrame(const ofxFaceTracker& tracker) {
     }
 
     if (_settings.direction) {
-      obj["dir"] = JsonUtil::toJson(tracker.getDirection());
+      obj["dir"] = JsonUtil::enumToJson(tracker.getDirection());
     }
 
     if (_settings.transform) {
@@ -71,7 +71,12 @@ void JsonTrackingOutput::writeFrame(const ofxFaceTracker& tracker) {
     }
 
     if (_settings.gestures) {
-      // TODO
+      auto gesturesObj = ofJson::object();
+      for (const auto gesture : getEnumInfo<Gesture>().values()) {
+        auto value = tracker.getGesture(gesture);
+        gesturesObj[enumToString(gesture)] = value;
+      }
+      obj["gestures"] = gesturesObj;
     }
     _file << obj << ",\n";
   }
