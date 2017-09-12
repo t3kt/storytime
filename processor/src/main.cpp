@@ -39,27 +39,7 @@ bool loadSettingsFile(const std::string& path, Settings* settings) {
 
 int main(int argc, const char **argv){
   ofAppGLFWWindow window;
-	ofSetupOpenGL(&window, 1024,768,OF_WINDOW);			// <-------- setup the GL context
-//
-//	// this kicks off the running of my app
-//	// can be OF_WINDOW or OF_FULLSCREEN
-//	// pass in width and height too:
-//	ofRunApp(new ofApp());
-
-
-  // DEBUG STUFF !!!!!!!!!
-
-//  const char* DEBUG_ARGV[] = {
-//    "DBG-COMMAND",
-//    "/Users/tekt/creations/storytime/processor/testing/settings.json",
-//    "/Users/tekt/creations/storytime/processor/testing/career-advice.mp4",
-//    "/Users/tekt/creations/storytime/processor/testing/output.json",
-//  };
-//  argv = DEBUG_ARGV;
-//  argc = 4;
-
-  // END DEBUG STUFF!!!!!!!
-
+	ofSetupOpenGL(&window, 1024, 768, OF_WINDOW);
 
   if (argc < 3) {
     return usage(argv[0]);
