@@ -51,14 +51,18 @@ void JsonTrackingOutput::writeSettings(const Settings& settings) {
   _file << "\"settings\": " << settings.toJson().dump(2) << ",\n";
 }
 
-void JsonTrackingOutput::writeVideoInfo(const ofVideoPlayer& video) {
-  ofJson obj = {
+ofJson getVideoInfoJson(const ofVideoPlayer& video) {
+  return {
     {"file", video.getMoviePath()},
     {"width", video.getWidth()},
     {"height", video.getHeight()},
     {"frameCount", video.getTotalNumFrames()},
     {"duration", video.getDuration()},
   };
+}
+
+void JsonTrackingOutput::writeVideoInfo(const ofVideoPlayer& video) {
+  ofJson obj = getVideoInfoJson(video);
   _file << "\"videoInfo\": " << obj.dump(2) << ",\n";
   _file << "\"frames\": [\n";
 }

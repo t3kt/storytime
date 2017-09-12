@@ -8,6 +8,7 @@
 enum class OutputFormat {
   UNKNOWN,
   JSON,
+  MULTIFILE,
 };
 
 std::ostream& operator<<(std::ostream& os,

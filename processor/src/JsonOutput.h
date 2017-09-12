@@ -10,16 +10,19 @@ namespace ofxTCommon {
   }
 }
 
+ofJson getVideoInfoJson(const ofVideoPlayer& video);
+
 class JsonTrackingOutput : public TrackingOutput {
 public:
   JsonTrackingOutput(const OutputSettings& settings)
-  : TrackingOutput(settings) {}
+  : _settings(settings) {}
   bool setup() override;
   void writeSettings(const Settings& settings) override;
   void writeVideoInfo(const ofVideoPlayer& video) override;
   void writeFrame(const ofxFaceTracker& tracker) override;
   void close() override;
 private:
+  const OutputSettings& _settings;
   ofFile _file;
   int _framesSinceFlush;
 };

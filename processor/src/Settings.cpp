@@ -6,6 +6,7 @@ using namespace ofxTCommon;
 EnumTypeInfo<OutputFormat> OutputFormatInfo {
   {"unknown", OutputFormat::UNKNOWN},
   {"json", OutputFormat::JSON},
+  {"multifile", OutputFormat::MULTIFILE},
 };
 
 template<>
