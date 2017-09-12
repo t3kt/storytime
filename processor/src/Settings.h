@@ -37,7 +37,9 @@ public:
   bool haarRectangle;
   bool transform;
   bool direction;
-  bool features;
+  bool imageFeatures;
+  bool objectFeatures;
+  bool meanObjectFeatures;
   bool gestures;
 };
 

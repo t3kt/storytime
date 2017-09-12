@@ -1,12 +1,31 @@
 #include "JsonOutput.h"
 #include "ofxTJsonIO.h"
+#include <functional>
 
 using Direction = ofxFaceTracker::Direction;
 using Feature = ofxFaceTracker::Feature;
 using Gesture = ofxFaceTracker::Gesture;
 using namespace ofxTCommon;
 
+using FeatureGetter = std::function<ofPolyline(Feature)>;
+
+ofJson featuresToJson(FeatureGetter getter) {
+  ofJson obj = ofJson::object();
+  for (auto feature : getEnumInfo<Feature>().values()) {
+    auto polyline = getter(feature);
+    auto polylineObj = JsonUtil::toJson(polyline);
+    if (polylineObj.is_null()) {
+      continue;
+    }
+    obj[enumToString(feature)] = polylineObj;
+  }
+  return obj;
+}
+
 ofJson JsonUtil::toJson(const ofPolyline& polyline) {
+  if (polyline.size() == 0) {
+    return nullptr;
+  }
   ofJson vertObjs = ofJson::array();
 
   for (const auto& vert : polyline.getVertices()) {
@@ -66,8 +85,22 @@ void JsonTrackingOutput::writeFrame(const ofxFaceTracker& tracker) {
       obj["rot"] = JsonUtil::toJson(tracker.getRotationMatrix());
     }
 
-    if (_settings.features) {
-      // TODO
+    if (_settings.imageFeatures) {
+      obj["imgFeatures"] = featuresToJson([&](Feature f) {
+        return tracker.getImageFeature(f);
+      });
+    }
+
+    if (_settings.objectFeatures) {
+      obj["objFeatures"] = featuresToJson([&](Feature f) {
+        return tracker.getObjectFeature(f);
+      });
+    }
+
+    if (_settings.meanObjectFeatures) {
+      obj["meanObjFeatures"] = featuresToJson([&](Feature f) {
+        return tracker.getMeanObjectFeature(f);
+      });
     }
 
     if (_settings.gestures) {
