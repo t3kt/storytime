@@ -4,7 +4,8 @@ bool FrameTableWriter::setup() {
   if (!_file.canWrite()) {
     return false;
   }
-  writeHeaders();
+  auto headers = getHeaders();
+  writeRow(headers);
   return true;
 }
 
@@ -15,7 +16,7 @@ void FrameTableWriter::close() {
 const char CELL_SEPARATOR = '\t';
 const char LINE_SEPARATOR = '\n';
 
-void FrameTableWriter::writeRow(const std::vector<std::string>& cells) {
+void FrameTableWriter::writeRow(const CellList& cells) {
   bool atStart = true;
   for (const auto& cell : cells) {
     if (atStart) {
@@ -26,9 +27,49 @@ void FrameTableWriter::writeRow(const std::vector<std::string>& cells) {
     _file << cell;
   }
   _file << LINE_SEPARATOR;
+  _file.flush();
 }
 
 void FrameTableWriter::writeFrame(const ofxFaceTracker& tracker) {
   auto cells = buildFrameCells(tracker);
   writeRow(cells);
+}
+
+class HaarRectangleTableWriter
+: public FrameTableWriter {
+public:
+  HaarRectangleTableWriter(ofFile file)
+  : FrameTableWriter(file) {}
+protected:
+  CellList getHeaders() override {
+    return {
+      "x",
+      "y",
+      "w",
+      "h",
+    };
+  }
+
+  CellList buildFrameCells(const ofxFaceTracker& tracker) override {
+    if (!tracker.getHaarFound()) {
+      return {
+        "",
+        "",
+        "",
+        "",
+      };
+    }
+    auto rect = tracker.getHaarRectangle();
+    return {
+      ofToString(rect.getX()),
+      ofToString(rect.getY()),
+      ofToString(rect.getWidth()),
+      ofToString(rect.getHeight()),
+    };
+  }
+};
+
+std::shared_ptr<FrameTableWriter>
+CreateTableWriter::haarRectangle(ofFile file) {
+  return std::make_shared<HaarRectangleTableWriter>(file);
 }

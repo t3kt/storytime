@@ -3,22 +3,26 @@
 #include "ofMain.h"
 #include "ofxFaceTracker.h"
 #include "Output.h"
+#include <memory>
 #include <string>
 #include <vector>
 
 class FrameTableWriter : public FrameWriter {
+protected:
+  using CellList = std::vector<std::string>;
 public:
   FrameTableWriter(ofFile file)
   : _file(file) {}
+
   virtual bool setup() override;
   virtual void writeFrame(const ofxFaceTracker& tracker) override;
   virtual void close() override;
 protected:
 //  virtual void writeFrameCells(const ofxFaceTracker& tracker) = 0;
-  virtual void writeHeaders() = 0;
-  virtual std::vector<std::string> buildFrameCells(const ofxFaceTracker& tracker) = 0;
+  virtual CellList getHeaders() = 0;
+  virtual CellList buildFrameCells(const ofxFaceTracker& tracker) = 0;
 
-  void writeRow(const std::vector<std::string>& cells);
+  void writeRow(const CellList& cells);
 
 //  void beginRow();
 //  void nextCell();
@@ -27,3 +31,7 @@ protected:
   ofFile _file;
   bool _atRowStart;
 };
+
+namespace CreateTableWriter {
+  std::shared_ptr<FrameTableWriter> haarRectangle(ofFile file);
+}

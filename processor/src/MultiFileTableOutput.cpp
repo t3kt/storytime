@@ -1,4 +1,5 @@
 #include "MultiFileTableOutput.h"
+#include "FrameTableWriter.h"
 #include "JsonOutput.h"
 
 bool MultiFileTableOutput::setup() {
@@ -28,7 +29,11 @@ bool MultiFileTableOutput::setup() {
   }
 
   if (_settings.haarRectangle) {
-    // TODO: set up haar rectangle writer
+    ofFile haarFile;
+    if (!openWritableFile("haarrect.txt", &haarFile)) {
+      return false;
+    }
+    _frameWriters.push_back(CreateTableWriter::haarRectangle(haarFile));
   }
 
   if (_settings.transform) {
@@ -61,6 +66,7 @@ bool MultiFileTableOutput::openWritableFile(const std::filesystem::path& path, o
     ofLogFatalError() << "Cannot open file " << filePath;
     return false;
   }
+  return true;
 }
 
 void MultiFileTableOutput::writeSettings(const Settings& settings) {
