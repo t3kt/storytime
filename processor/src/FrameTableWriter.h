@@ -11,8 +11,14 @@ class FrameTableWriter : public FrameWriter {
 protected:
   using CellList = std::vector<std::string>;
 public:
-  FrameTableWriter(ofFile file)
-  : _file(file) {}
+  FrameTableWriter(std::filesystem::path filepath)
+  : _filepath(filepath) {}
+
+  virtual ~FrameTableWriter() {
+    if (_file.is_open()) {
+      _file.close();
+    }
+  }
 
   virtual bool setup() override;
   virtual void writeFrame(const ofxFaceTracker& tracker) override;
@@ -28,10 +34,11 @@ protected:
 //  void nextCell();
 //  void endRow();
 
+  std::filesystem::path _filepath;
   ofFile _file;
   bool _atRowStart;
 };
 
 namespace CreateTableWriter {
-  std::shared_ptr<FrameTableWriter> haarRectangle(ofFile file);
+  std::shared_ptr<FrameTableWriter> haarRectangle(std::filesystem::path filepath);
 }

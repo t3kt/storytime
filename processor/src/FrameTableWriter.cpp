@@ -1,9 +1,14 @@
 #include "FrameTableWriter.h"
 
 bool FrameTableWriter::setup() {
-  if (!_file.canWrite()) {
+  if (!_file.open(_filepath, ofFile::WriteOnly, /*binary*/false) ||
+      !_file.canWrite()) {
+    ofLogFatalError() << "Cannot open file " << _filepath;
     return false;
   }
+
+  _file << "OMGWTF" << std::endl;
+  _file.flush();
   auto headers = getHeaders();
   writeRow(headers);
   return true;
@@ -38,8 +43,8 @@ void FrameTableWriter::writeFrame(const ofxFaceTracker& tracker) {
 class HaarRectangleTableWriter
 : public FrameTableWriter {
 public:
-  HaarRectangleTableWriter(ofFile file)
-  : FrameTableWriter(file) {}
+  HaarRectangleTableWriter(ofFile&& file)
+  : FrameTableWriter(std::move(file)) {}
 protected:
   CellList getHeaders() override {
     return {
@@ -70,6 +75,6 @@ protected:
 };
 
 std::shared_ptr<FrameTableWriter>
-CreateTableWriter::haarRectangle(ofFile file) {
-  return std::make_shared<HaarRectangleTableWriter>(file);
+CreateTableWriter::haarRectangle(std::filesystem::path filepath) {
+  return std::make_shared<HaarRectangleTableWriter>(filepath);
 }

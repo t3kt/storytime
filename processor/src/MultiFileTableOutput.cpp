@@ -29,11 +29,7 @@ bool MultiFileTableOutput::setup() {
   }
 
   if (_settings.haarRectangle) {
-    ofFile haarFile;
-    if (!openWritableFile("haarrect.txt", &haarFile)) {
-      return false;
-    }
-    _frameWriters.push_back(CreateTableWriter::haarRectangle(haarFile));
+    _frameWriters.push_back(CreateTableWriter::haarRectangle(getFilePath("haarrect.txt")));
   }
 
   if (_settings.transform) {
@@ -59,9 +55,13 @@ bool MultiFileTableOutput::setup() {
   return true;
 }
 
-bool MultiFileTableOutput::openWritableFile(const std::filesystem::path& path, ofFile* file) {
+std::filesystem::path MultiFileTableOutput::getFilePath(const std::filesystem::path& path) const {
   std::filesystem::path dirPath = _dir;
-  auto filePath = dirPath / path;
+  return dirPath / path;
+}
+
+bool MultiFileTableOutput::openWritableFile(const std::filesystem::path& path, ofFile* file) {
+  auto filePath = getFilePath(path);
   if (!file->open(filePath, ofFile::WriteOnly, /*binary*/ false) || !file->canWrite()) {
     ofLogFatalError() << "Cannot open file " << filePath;
     return false;

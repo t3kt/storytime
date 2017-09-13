@@ -17,6 +17,7 @@ public:
   void close() override;
 
 private:
+  std::filesystem::path getFilePath(const std::filesystem::path& path) const;
   bool openWritableFile(const std::filesystem::path& path, ofFile* file);
 
   const OutputSettings& _settings;

@@ -141,7 +141,6 @@
 		326A339C99C67EFE1154F455 /* fast_math.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = fast_math.hpp; path = ../../openFrameworks/addons/ofxOpenCv/libs/opencv/include/opencv2/core/fast_math.hpp; sourceTree = SOURCE_ROOT; };
 		32AC994F1F68BA69009FD034 /* FrameTableWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FrameTableWriter.cpp; sourceTree = "<group>"; };
 		32AC99501F68BA69009FD034 /* FrameTableWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FrameTableWriter.h; sourceTree = "<group>"; };
-		32AC99521F68BB4F009FD034 /* src */ = {isa = PBXFileReference; lastKnownFileType = folder; name = src; path = ../../../openFrameworks/addons/ofxCsv/src; sourceTree = "<group>"; };
 		32D026221F5A56970044E85E /* TrackingProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TrackingProcessor.cpp; sourceTree = "<group>"; };
 		32D026231F5A56970044E85E /* TrackingProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrackingProcessor.h; sourceTree = "<group>"; };
 		32D026251F5A5A6B0044E85E /* JsonOutput.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JsonOutput.cpp; sourceTree = "<group>"; };
@@ -535,14 +534,6 @@
 			name = shape;
 			sourceTree = "<group>";
 		};
-		322E5C0B1F57C1BD0086BC7F /* ofxCsv */ = {
-			isa = PBXGroup;
-			children = (
-				32AC99521F68BB4F009FD034 /* src */,
-			);
-			path = ofxCsv;
-			sourceTree = "<group>";
-		};
 		32E08D341F6605050066CF7B /* ofxTCommon */ = {
 			isa = PBXGroup;
 			children = (
@@ -901,7 +892,6 @@
 		BB4B014C10F69532006C3DED /* addons */ = {
 			isa = PBXGroup;
 			children = (
-				322E5C0B1F57C1BD0086BC7F /* ofxCsv */,
 				6025FAF6414C2CA589764D26 /* ofxCv */,
 				2B86176FA97BFB2BEE1F2F83 /* ofxFaceTracker */,
 				A0B90D3B0ADB9C1716816714 /* ofxOpenCv */,
