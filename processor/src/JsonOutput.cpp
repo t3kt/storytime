@@ -78,15 +78,12 @@ void JsonTrackingOutput::writeFrame(const ofxFaceTracker& tracker) {
       obj["haar"] = JsonUtil::toJson(tracker.getHaarRectangle());
     }
 
-    if (_settings.direction) {
-      obj["dir"] = JsonUtil::enumToJson(tracker.getDirection());
-    }
-
     if (_settings.transform) {
       obj["pos"] = JsonUtil::toJson(tracker.getPosition());
       obj["scale"] = tracker.getScale();
       obj["orient"] = JsonUtil::toJson(tracker.getOrientation());
       obj["rot"] = JsonUtil::toJson(tracker.getRotationMatrix());
+      obj["dir"] = JsonUtil::enumToJson(tracker.getDirection());
     }
 
     if (_settings.imageFeatures) {

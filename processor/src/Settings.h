@@ -37,7 +37,6 @@ public:
   bool meshes;
   bool haarRectangle;
   bool transform;
-  bool direction;
   bool imageFeatures;
   bool objectFeatures;
   bool meanObjectFeatures;

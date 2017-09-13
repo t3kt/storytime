@@ -4,14 +4,17 @@
 #include "ofxFaceTracker.h"
 #include <memory>
 
-class TrackingOutput {
+class FrameWriter {
+public:
+  virtual bool setup() { return true; }
+  virtual void writeFrame(const ofxFaceTracker& tracker) = 0;
+  virtual void close() {}
+};
+
+class TrackingOutput : public FrameWriter {
 public:
   static std::shared_ptr<TrackingOutput> createOutput(const OutputSettings& settings);
 
-  virtual bool setup() { return true; }
   virtual void writeSettings(const Settings& settings) {}
   virtual void writeVideoInfo(const ofVideoPlayer& video) {}
-  virtual void writeFrame(const ofxFaceTracker& tracker) = 0;
-  virtual void save() {}
-  virtual void close() {}
 };

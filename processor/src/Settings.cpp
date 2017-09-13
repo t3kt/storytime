@@ -32,7 +32,6 @@ ofJson OutputSettings::toJson() const {
     {"meshes", meshes},
     {"haarRectangle", haarRectangle},
     {"transform", transform},
-    {"direction", direction},
     {"imageFeatures", imageFeatures},
     {"objectFeatures", objectFeatures},
     {"meanObjectFeatures", meanObjectFeatures},
@@ -48,7 +47,6 @@ void OutputSettings::readJson(const ofJson& obj) {
   meshes = JsonUtil::fromJsonField(obj, "meshes", false);
   haarRectangle = JsonUtil::fromJsonField(obj, "haarRectangle", false);
   transform = JsonUtil::fromJsonField(obj, "transform", false);
-  direction = JsonUtil::fromJsonField(obj, "direction", false);
   imageFeatures = JsonUtil::fromJsonField(obj, "imageFeatures", false);
   objectFeatures = JsonUtil::fromJsonField(obj, "objectFeatures", false);
   meanObjectFeatures = JsonUtil::fromJsonField(obj, "meanObjectFeatures", false);

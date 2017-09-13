@@ -1,5 +1,5 @@
 #include "MultiFileTableOutput.h"
-
+#include "JsonOutput.h"
 
 bool MultiFileTableOutput::setup() {
   _dir.openFromCWD(_settings.file);
@@ -19,7 +19,38 @@ bool MultiFileTableOutput::setup() {
     return false;
   }
 
-  // TODO: set up table writers!
+  if (_settings.points) {
+    // TODO: set up points writer
+  }
+
+  if (_settings.meshes) {
+    // TODO: set up meshes writer
+  }
+
+  if (_settings.haarRectangle) {
+    // TODO: set up haar rectangle writer
+  }
+
+  if (_settings.transform) {
+    // TODO: set up transform / direction writer
+  }
+
+  if (_settings.imageFeatures) {
+    // TODO: set up image features writer
+  }
+
+  if (_settings.objectFeatures) {
+    // TODO: set up object features writer
+  }
+
+  if (_settings.meanObjectFeatures) {
+    // TODO: set up mean object features writer
+  }
+
+  if (_settings.gestures) {
+    // TODO: set up gestures writer
+  }
+
   return true;
 }
 
@@ -44,9 +75,13 @@ void MultiFileTableOutput::writeVideoInfo(const ofVideoPlayer& video) {
 }
 
 void MultiFileTableOutput::writeFrame(const ofxFaceTracker& tracker) {
-  // TODO: frame output!
+  for (auto& writer : _frameWriters) {
+    writer->writeFrame(tracker);
+  }
 }
 
 void MultiFileTableOutput::close() {
-  // TODO: close!
+  for (auto& writer : _frameWriters) {
+    writer->close();
+  }
 }

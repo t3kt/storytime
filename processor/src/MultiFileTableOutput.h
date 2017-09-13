@@ -3,20 +3,7 @@
 #include "ofMain.h"
 #include "ofxFaceTracker.h"
 #include "Output.h"
-#include "JsonOutput.h"
-#include <vector>
-#include <memory>
-
-class FrameTableWriter {
-public:
-  virtual bool setup() = 0;
-  virtual void writeFrame(const ofxFaceTracker& tracker) = 0;
-  virtual void close();
-protected:
-  bool initFile(const std::string& path);
-
-  ofFile _file;
-};
+#include "Settings.h"
 
 class MultiFileTableOutput : public TrackingOutput {
 public:
@@ -36,5 +23,5 @@ private:
   ofDirectory _dir;
   ofFile _settingsFile;
   ofFile _videoInfoFile;
-  std::vector<std::shared_ptr<FrameTableWriter>> _frameWriters;
+  std::vector<std::shared_ptr<FrameWriter>> _frameWriters;
 };
