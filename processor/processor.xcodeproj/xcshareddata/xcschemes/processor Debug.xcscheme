@@ -71,10 +71,6 @@
             argument = "/Users/tekt/creations/storytime/processor/testing/career-advice.mp4"
             isEnabled = "YES">
          </CommandLineArgument>
-         <CommandLineArgument
-            argument = "/Users/tekt/creations/storytime/processor/testing/output.json"
-            isEnabled = "YES">
-         </CommandLineArgument>
       </CommandLineArguments>
       <AdditionalOptions>
       </AdditionalOptions>

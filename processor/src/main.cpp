@@ -54,7 +54,7 @@ int main(int argc, const char **argv){
 
   std::string videoPath = argv[2];
 
-  if (argc > 2) {
+  if (argc > 3) {
     settings.output.file = argv[3];
   }
 
