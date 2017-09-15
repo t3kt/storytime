@@ -68,25 +68,6 @@ int main(int argc, const char **argv){
 
   ofRunApp(new ofApp(settings, videoPath));
 
-//  TrackingProcessor processor;
-//  if (!processor.setup(settings)) {
-//    ofLogFatalError() << "Error during tracking processor setup!";
-//    return 1;
-//  }
-//  if (!processor.loadMovie(videoPath)) {
-//    ofLogFatalError() << "Error loading video!";
-//    return 1;
-//  }
-//
-//  for (;;) {
-//    ofLogVerbose() << "Processing next frame..";
-//    if (!processor.processNextFrame()) {
-//      ofLogNotice() << "Finished processing frames";
-//      break;
-//    }
-//  }
-//  processor.close();
-//  ofLogNotice() << "Finished!";
   return 0;
 }
 
