@@ -90,9 +90,10 @@ void MultiFileTableOutput::writeVideoInfo(const ofVideoPlayer& video) {
   _videoInfoFile.close();
 }
 
-void MultiFileTableOutput::writeFrame(const ofxFaceTracker& tracker) {
+void MultiFileTableOutput::writeFrame(const ofVideoPlayer& video,
+                                      const ofxFaceTracker& tracker) {
   for (auto& writer : _frameWriters) {
-    writer->writeFrame(tracker);
+    writer->writeFrame(video, tracker);
   }
 }
 

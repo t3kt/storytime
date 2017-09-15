@@ -54,6 +54,6 @@ bool TrackingProcessor::processNextFrame() {
   }
   _video.nextFrame();
   _tracker.update(ofxCv::toCv(_video));
-  _output->writeFrame(_tracker);
+  _output->writeFrame(_video, _tracker);
   return true;
 }

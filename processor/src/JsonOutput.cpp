@@ -67,8 +67,11 @@ void JsonTrackingOutput::writeVideoInfo(const ofVideoPlayer& video) {
   _file << "\"frames\": [\n";
 }
 
-void JsonTrackingOutput::writeFrame(const ofxFaceTracker& tracker) {
-  auto obj = ofJson::object();
+void JsonTrackingOutput::writeFrame(const ofVideoPlayer& video,
+                                    const ofxFaceTracker& tracker) {
+  ofJson obj = {
+    {"frame", video.getCurrentFrame()},
+  };
   if (!tracker.getFound()) {
     obj["missing"] = true;
     _file << obj << "\n";

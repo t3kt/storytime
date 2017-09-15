@@ -21,12 +21,14 @@ public:
   }
 
   virtual bool setup() override;
-  virtual void writeFrame(const ofxFaceTracker& tracker) override;
+  virtual void writeFrame(const ofVideoPlayer& video,
+                          const ofxFaceTracker& tracker) override;
   virtual void close() override;
 protected:
 //  virtual void writeFrameCells(const ofxFaceTracker& tracker) = 0;
   virtual CellList getHeaders() = 0;
-  virtual CellList buildFrameCells(const ofxFaceTracker& tracker) = 0;
+  virtual CellList buildFrameCells(const ofVideoPlayer& video,
+                                   const ofxFaceTracker& tracker) = 0;
 
   void writeRow(const CellList& cells);
 

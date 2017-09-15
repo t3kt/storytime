@@ -19,7 +19,8 @@ public:
   bool setup() override;
   void writeSettings(const Settings& settings) override;
   void writeVideoInfo(const ofVideoPlayer& video) override;
-  void writeFrame(const ofxFaceTracker& tracker) override;
+  void writeFrame(const ofVideoPlayer& video,
+                  const ofxFaceTracker& tracker) override;
   void close() override;
 private:
   const OutputSettings& _settings;

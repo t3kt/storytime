@@ -33,8 +33,9 @@ void FrameTableWriter::writeRow(const CellList& cells) {
   _file.flush();
 }
 
-void FrameTableWriter::writeFrame(const ofxFaceTracker& tracker) {
-  auto cells = buildFrameCells(tracker);
+void FrameTableWriter::writeFrame(const ofVideoPlayer& video,
+                                  const ofxFaceTracker& tracker) {
+  auto cells = buildFrameCells(video, tracker);
   writeRow(cells);
 }
 
@@ -46,6 +47,8 @@ public:
 protected:
   CellList getHeaders() override {
     return {
+      "frame",
+      "found",
       "x",
       "y",
       "w",
@@ -53,9 +56,13 @@ protected:
     };
   }
 
-  CellList buildFrameCells(const ofxFaceTracker& tracker) override {
+  CellList buildFrameCells(const ofVideoPlayer& video,
+                           const ofxFaceTracker& tracker) override {
+    auto frame = video.getCurrentFrame();
     if (!tracker.getHaarFound()) {
       return {
+        ofToString(frame),
+        "0",
         "",
         "",
         "",
@@ -64,6 +71,8 @@ protected:
     }
     auto rect = tracker.getHaarRectangle();
     return {
+      ofToString(frame),
+      "1",
       ofToString(rect.getX()),
       ofToString(rect.getY()),
       ofToString(rect.getWidth()),

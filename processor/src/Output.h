@@ -9,7 +9,8 @@ public:
   virtual ~FrameWriter() {}
 
   virtual bool setup() { return true; }
-  virtual void writeFrame(const ofxFaceTracker& tracker) = 0;
+  virtual void writeFrame(const ofVideoPlayer& video,
+                          const ofxFaceTracker& tracker) = 0;
   virtual void close() {}
 };
 
