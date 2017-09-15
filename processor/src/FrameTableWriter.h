@@ -24,21 +24,12 @@ public:
 
   virtual bool setup() override;
   virtual void writeFrame(const ofVideoPlayer& video,
-                          const ofxFaceTracker& tracker) override;
+                          const ofxFaceTracker& tracker) override = 0;
   virtual void close() override;
 protected:
-//  virtual void writeFrameCells(const ofxFaceTracker& tracker) = 0;
-  virtual CellList getHeaders() = 0;
-  virtual CellList buildFrameCells(const ofVideoPlayer& video,
-                                   const ofxFaceTracker& tracker) = 0;
-
-  void writeRow(const CellList& cells);
-
   TableWriter& table() { return *_table; }
 
-//  void beginRow();
-//  void nextCell();
-//  void endRow();
+  virtual void writeHeaderRow() = 0;
 
   std::filesystem::path _filepath;
   ofFile _file;
@@ -52,10 +43,10 @@ public:
   TransformTableWriter(std::filesystem::path filepath)
   : FrameTableWriter(filepath) {}
 protected:
-  CellList getHeaders() override;
+  void writeHeaderRow() override;
 
-  CellList buildFrameCells(const ofVideoPlayer& video,
-                           const ofxFaceTracker& tracker) override;
+  void writeFrame(const ofVideoPlayer& video,
+                  const ofxFaceTracker& tracker) override;
 };
 
 class HaarRectangleTableWriter
@@ -64,10 +55,10 @@ public:
   HaarRectangleTableWriter(std::filesystem::path filepath)
   : FrameTableWriter(filepath) {}
 protected:
-  CellList getHeaders() override;
+  void writeHeaderRow() override;
 
-  CellList buildFrameCells(const ofVideoPlayer& video,
-                           const ofxFaceTracker& tracker) override;
+  void writeFrame(const ofVideoPlayer& video,
+                  const ofxFaceTracker& tracker) override;
 };
 
 template<typename W>

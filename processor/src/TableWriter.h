@@ -2,6 +2,7 @@
 
 #include <initializer_list>
 #include <fstream>
+#include <ofMain.h>
 
 class TableWriter {
 private:
@@ -13,39 +14,74 @@ public:
   , _atRowStart(true) {}
 
   template<typename T>
-  void writeCell(T value) {
+  TableWriter& writeCell(T value) {
     beginCell();
     _out << value;
+    return *this;
   }
 
   template<typename T>
-  void writeCells(std::initializer_list<T> values) {
+  TableWriter& writeCells(std::initializer_list<T> values) {
     for (const auto& value : values) {
       writeCell(value);
     }
+    return *this;
   }
 
   template<typename Iter>
-  void writeCells(Iter start, Iter end) {
+  TableWriter& writeCells(Iter start, Iter end) {
     for (auto iter = start; iter != end; iter++) {
       writeCell(*iter);
     }
+    return *this;
   }
 
-  void writeBlankCell() {
+  TableWriter& writeCells(const ofVec2f& value) {
+    writeCell(value.x);
+    writeCell(value.y);
+    return *this;
+  }
+
+  TableWriter& writeCells(const ofVec3f& value) {
+    writeCell(value.x);
+    writeCell(value.y);
+    writeCell(value.z);
+    return *this;
+  }
+
+  TableWriter& writeCells(const ofVec4f& value) {
+    writeCell(value.x);
+    writeCell(value.y);
+    writeCell(value.z);
+    writeCell(value.w);
+    return *this;
+  }
+
+  TableWriter& writeCells(const ofMatrix4x4& value) {
+    writeCells(value.getRowAsVec4f(0));
+    writeCells(value.getRowAsVec4f(1));
+    writeCells(value.getRowAsVec4f(2));
+    writeCells(value.getRowAsVec4f(3));
+    return *this;
+  }
+
+  TableWriter& writeBlankCell() {
     beginCell();
+    return *this;
   }
 
-  void writeBlankCells(std::size_t count) {
+  TableWriter& writeBlankCells(std::size_t count) {
     for (auto i = 0; i < count; ++i) {
       writeBlankCell();
     }
+    return *this;
   }
 
-  void endRow() {
+  TableWriter& endRow() {
     _out << LINE_SEPARATOR;
     _atRowStart = true;
     _out.flush();
+    return *this;
   }
 private:
   void beginCell() {

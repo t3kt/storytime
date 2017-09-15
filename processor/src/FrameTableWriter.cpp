@@ -11,8 +11,7 @@ bool FrameTableWriter::setup() {
     return false;
   }
   _table = std::make_unique<TableWriter>(_file);
-  auto headers = getHeaders();
-  writeRow(headers);
+  writeHeaderRow();
   return true;
 }
 
@@ -20,57 +19,41 @@ void FrameTableWriter::close() {
   _file.close();
 }
 
-const char CELL_SEPARATOR = '\t';
-const char LINE_SEPARATOR = '\n';
-
-void FrameTableWriter::writeRow(const CellList& cells) {
-  table().writeCells(cells.begin(), cells.end());
-  table().endRow();
-}
-
-void FrameTableWriter::writeFrame(const ofVideoPlayer& video,
-                                  const ofxFaceTracker& tracker) {
-  auto cells = buildFrameCells(video, tracker);
-  writeRow(cells);
-}
-
-CellList HaarRectangleTableWriter::getHeaders() {
-  return {
+void HaarRectangleTableWriter::writeHeaderRow() {
+  table().writeCells({
     "frame",
     "found",
     "x",
     "y",
     "w",
     "h",
-  };
+  });
+  table().endRow();
 }
 
-CellList HaarRectangleTableWriter::buildFrameCells(const ofVideoPlayer& video,
+void HaarRectangleTableWriter::writeFrame(const ofVideoPlayer& video,
                          const ofxFaceTracker& tracker) {
   auto frame = video.getCurrentFrame();
+  table().writeCell(frame);
   if (!tracker.getHaarFound()) {
-    return {
-      ofToString(frame),
-      "0",
-      "",
-      "",
-      "",
-      "",
-    };
+    table()
+    .writeCell(0)
+    .writeBlankCells(4);
+  } else {
+    table().writeCell(1);
+    auto rect = tracker.getHaarRectangle();
+    table()
+    .writeCell(rect.getX())
+    .writeCell(rect.getY())
+    .writeCell(rect.getWidth())
+    .writeCell(rect.getHeight());
   }
-  auto rect = tracker.getHaarRectangle();
-  return {
-    ofToString(frame),
-    "1",
-    ofToString(rect.getX()),
-    ofToString(rect.getY()),
-    ofToString(rect.getWidth()),
-    ofToString(rect.getHeight()),
-  };
+  table().endRow();
 }
 
-CellList TransformTableWriter::getHeaders() {
-  return {
+void TransformTableWriter::writeHeaderRow() {
+  table()
+  .writeCells({
     "frame",
     "found",
 
@@ -86,63 +69,33 @@ CellList TransformTableWriter::getHeaders() {
     "rot_1_0", "rot_1_1", "rot_1_2", "rot_1_3",
     "rot_2_0", "rot_2_1", "rot_2_2", "rot_2_3",
     "rot_3_0", "rot_3_1", "rot_3_2", "rot_3_3",
-  };
+  })
+  .endRow();
 }
 
-CellList TransformTableWriter::buildFrameCells(const ofVideoPlayer& video,
+void TransformTableWriter::writeFrame(const ofVideoPlayer& video,
                                                const ofxFaceTracker& tracker) {
   auto frame = video.getCurrentFrame();
+  table().writeCell(frame);
   if (!tracker.getFound()) {
-    return {
-      ofToString(frame),
-      "0",
-
-      // position
-      "", "",
-
-      // scale
-      "",
-
-      // orientation
-      "", "", "",
-
-      // direction
-      "",
-
-      // rotattion matrix
-      "", "", "", "",
-      "", "", "", "",
-      "", "", "", "",
-      "", "", "", "",
-    };
+    table()
+    .writeCell(0)
+    .writeBlankCells(2 + 1 + 3 + 1 + 16);
+  } else {
+    auto pos = tracker.getPosition();
+    auto scale = tracker.getScale();
+    auto orient = tracker.getOrientation();
+    auto dir = tracker.getDirection();
+    auto rot = tracker.getRotationMatrix();
+    table()
+    .writeCell(1)
+    .writeCells(pos)
+    .writeCell(scale)
+    .writeCells(orient)
+    .writeCell(enumToString(dir))
+    .writeCells(rot);
   }
-  auto pos = tracker.getPosition();
-  auto scale = tracker.getScale();
-  auto orient = tracker.getOrientation();
-  auto dir = tracker.getDirection();
-  auto rot = tracker.getRotationMatrix();
-  return {
-    ofToString(frame),
-    "1",
-
-    // position
-    ofToString(pos.x), ofToString(pos.y),
-
-    // scale
-    ofToString(scale),
-
-    // orientation
-    ofToString(orient.x), ofToString(orient.y), ofToString(orient.z),
-
-    // direction
-    enumToString(dir),
-
-    // rotation matrix
-    ofToString(rot(0, 0)), ofToString(rot(0, 1)), ofToString(rot(0, 2)), ofToString(rot(0, 3)),
-    ofToString(rot(1, 0)), ofToString(rot(1, 1)), ofToString(rot(1, 2)), ofToString(rot(1, 3)),
-    ofToString(rot(2, 0)), ofToString(rot(2, 1)), ofToString(rot(2, 2)), ofToString(rot(2, 3)),
-    ofToString(rot(3, 0)), ofToString(rot(3, 1)), ofToString(rot(3, 2)), ofToString(rot(3, 3)),
-  };
+  table().endRow();
 }
 
 
