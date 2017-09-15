@@ -37,6 +37,18 @@ protected:
   bool _atRowStart;
 };
 
+class HaarRectangleTableWriter
+: public FrameTableWriter {
+public:
+  HaarRectangleTableWriter(std::filesystem::path filepath)
+  : FrameTableWriter(filepath) {}
+protected:
+  void writeHeaderRow() override;
+
+  void writeFrame(const ofVideoPlayer& video,
+                  const ofxFaceTracker& tracker) override;
+};
+
 class TransformTableWriter
 : public FrameTableWriter {
 public:
@@ -49,16 +61,17 @@ protected:
                   const ofxFaceTracker& tracker) override;
 };
 
-class HaarRectangleTableWriter
+class GestureTableWriter
 : public FrameTableWriter {
 public:
-  HaarRectangleTableWriter(std::filesystem::path filepath)
-  : FrameTableWriter(filepath) {}
+  GestureTableWriter(std::filesystem::path filepath);
 protected:
   void writeHeaderRow() override;
 
   void writeFrame(const ofVideoPlayer& video,
                   const ofxFaceTracker& tracker) override;
+private:
+  const std::vector<ofxFaceTracker::Gesture>& _gestures;
 };
 
 template<typename W>

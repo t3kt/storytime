@@ -98,4 +98,38 @@ void TransformTableWriter::writeFrame(const ofVideoPlayer& video,
   table().endRow();
 }
 
+GestureTableWriter::GestureTableWriter(std::filesystem::path filepath)
+: FrameTableWriter(filepath)
+, _gestures(getEnumInfo<ofxFaceTracker::Gesture>().values()) {}
+
+void GestureTableWriter::writeHeaderRow() {
+  table()
+  .writeCell("frame")
+  .writeCell("found");
+
+  for (const auto& gesture : _gestures) {
+    table().writeCell(enumToString(gesture));
+  }
+
+  table().endRow();
+}
+
+void GestureTableWriter::writeFrame(const ofVideoPlayer& video,
+                                    const ofxFaceTracker& tracker) {
+  auto frame = video.getCurrentFrame();
+  table().writeCell(frame);
+  if (!tracker.getFound()) {
+    table()
+    .writeCell(0)
+    .writeBlankCells(_gestures.size());
+  } else {
+    table()
+    .writeCell(1);
+    for (const auto& gesture : _gestures) {
+      table().writeCell(tracker.getGesture(gesture));
+    }
+  }
+  table().endRow();
+}
+
 

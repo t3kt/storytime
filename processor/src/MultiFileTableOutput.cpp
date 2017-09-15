@@ -53,7 +53,9 @@ bool MultiFileTableOutput::setup() {
   }
 
   if (_settings.gestures) {
-    // TODO: set up gestures writer
+    if (!addFrameWriter(createTableWriter<GestureTableWriter>(getFilePath("gesture.txt")))) {
+      return false;
+    }
   }
 
   return true;
