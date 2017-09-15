@@ -19,6 +19,7 @@ public:
 private:
   std::filesystem::path getFilePath(const std::filesystem::path& path) const;
   bool openWritableFile(const std::filesystem::path& path, ofFile* file);
+  bool addFrameWriter(std::shared_ptr<FrameWriter> writer);
 
   const OutputSettings& _settings;
   ofDirectory _dir;

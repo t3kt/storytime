@@ -29,7 +29,9 @@ bool MultiFileTableOutput::setup() {
   }
 
   if (_settings.haarRectangle) {
-    _frameWriters.push_back(CreateTableWriter::haarRectangle(getFilePath("haarrect.txt")));
+    if (!addFrameWriter(CreateTableWriter::haarRectangle(getFilePath("haarrect.txt")))) {
+      return false;
+    }
   }
 
   if (_settings.transform) {
@@ -52,6 +54,14 @@ bool MultiFileTableOutput::setup() {
     // TODO: set up gestures writer
   }
 
+  return true;
+}
+
+bool MultiFileTableOutput::addFrameWriter(std::shared_ptr<FrameWriter> writer) {
+  if (!writer->setup()) {
+    return false;
+  }
+  _frameWriters.push_back(writer);
   return true;
 }
 
