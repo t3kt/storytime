@@ -29,13 +29,15 @@ bool MultiFileTableOutput::setup() {
   }
 
   if (_settings.haarRectangle) {
-    if (!addFrameWriter(CreateTableWriter::haarRectangle(getFilePath("haarrect.txt")))) {
+    if (!addFrameWriter(createTableWriter<HaarRectangleTableWriter>(getFilePath("haarrect.txt")))) {
       return false;
     }
   }
 
   if (_settings.transform) {
-    // TODO: set up transform / direction writer
+    if (!addFrameWriter(createTableWriter<TransformTableWriter>(getFilePath("transform.txt")))) {
+      return false;
+    }
   }
 
   if (_settings.imageFeatures) {

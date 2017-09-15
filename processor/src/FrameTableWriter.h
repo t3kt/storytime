@@ -7,9 +7,10 @@
 #include <string>
 #include <vector>
 
+using CellList = std::vector<std::string>;
+
 class FrameTableWriter : public FrameWriter {
 protected:
-  using CellList = std::vector<std::string>;
 public:
   FrameTableWriter(std::filesystem::path filepath)
   : _filepath(filepath) {}
@@ -41,6 +42,32 @@ protected:
   bool _atRowStart;
 };
 
-namespace CreateTableWriter {
-  std::shared_ptr<FrameTableWriter> haarRectangle(std::filesystem::path filepath);
+class TransformTableWriter
+: public FrameTableWriter {
+public:
+  TransformTableWriter(std::filesystem::path filepath)
+  : FrameTableWriter(filepath) {}
+protected:
+  CellList getHeaders() override;
+
+  CellList buildFrameCells(const ofVideoPlayer& video,
+                           const ofxFaceTracker& tracker) override;
+};
+
+class HaarRectangleTableWriter
+: public FrameTableWriter {
+public:
+  HaarRectangleTableWriter(std::filesystem::path filepath)
+  : FrameTableWriter(filepath) {}
+protected:
+  CellList getHeaders() override;
+
+  CellList buildFrameCells(const ofVideoPlayer& video,
+                           const ofxFaceTracker& tracker) override;
+};
+
+template<typename W>
+std::shared_ptr<FrameTableWriter> createTableWriter(std::filesystem::path filepath) {
+  ofLogNotice() << "Creating table writer for " << filepath;
+  return std::make_shared<W>(filepath);
 }

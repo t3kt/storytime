@@ -1,4 +1,7 @@
 #include "FrameTableWriter.h"
+#include "ofxTEnums.h"
+
+using namespace ofxTCommon;
 
 bool FrameTableWriter::setup() {
   ofLogNotice() << "Opening file " << _filepath << " for frame table output";
@@ -39,50 +42,115 @@ void FrameTableWriter::writeFrame(const ofVideoPlayer& video,
   writeRow(cells);
 }
 
-class HaarRectangleTableWriter
-: public FrameTableWriter {
-public:
-  HaarRectangleTableWriter(std::filesystem::path filepath)
-  : FrameTableWriter(filepath) {}
-protected:
-  CellList getHeaders() override {
-    return {
-      "frame",
-      "found",
-      "x",
-      "y",
-      "w",
-      "h",
-    };
-  }
+CellList HaarRectangleTableWriter::getHeaders() {
+  return {
+    "frame",
+    "found",
+    "x",
+    "y",
+    "w",
+    "h",
+  };
+}
 
-  CellList buildFrameCells(const ofVideoPlayer& video,
-                           const ofxFaceTracker& tracker) override {
-    auto frame = video.getCurrentFrame();
-    if (!tracker.getHaarFound()) {
-      return {
-        ofToString(frame),
-        "0",
-        "",
-        "",
-        "",
-        "",
-      };
-    }
-    auto rect = tracker.getHaarRectangle();
+CellList HaarRectangleTableWriter::buildFrameCells(const ofVideoPlayer& video,
+                         const ofxFaceTracker& tracker) {
+  auto frame = video.getCurrentFrame();
+  if (!tracker.getHaarFound()) {
     return {
       ofToString(frame),
-      "1",
-      ofToString(rect.getX()),
-      ofToString(rect.getY()),
-      ofToString(rect.getWidth()),
-      ofToString(rect.getHeight()),
+      "0",
+      "",
+      "",
+      "",
+      "",
     };
   }
-};
-
-std::shared_ptr<FrameTableWriter>
-CreateTableWriter::haarRectangle(std::filesystem::path filepath) {
-  ofLogNotice() << "Creating table writer [haar rect] for " << filepath;
-  return std::make_shared<HaarRectangleTableWriter>(filepath);
+  auto rect = tracker.getHaarRectangle();
+  return {
+    ofToString(frame),
+    "1",
+    ofToString(rect.getX()),
+    ofToString(rect.getY()),
+    ofToString(rect.getWidth()),
+    ofToString(rect.getHeight()),
+  };
 }
+
+CellList TransformTableWriter::getHeaders() {
+  return {
+    "frame",
+    "found",
+
+    "pos_x", "pos_y",
+
+    "scale",
+
+    "orient_x", "orient_y", "orient_z",
+
+    "dir",
+
+    "rot_0_0", "rot_0_1", "rot_0_2", "rot_0_3",
+    "rot_1_0", "rot_1_1", "rot_1_2", "rot_1_3",
+    "rot_2_0", "rot_2_1", "rot_2_2", "rot_2_3",
+    "rot_3_0", "rot_3_1", "rot_3_2", "rot_3_3",
+  };
+}
+
+CellList TransformTableWriter::buildFrameCells(const ofVideoPlayer& video,
+                                               const ofxFaceTracker& tracker) {
+  auto frame = video.getCurrentFrame();
+  if (!tracker.getFound()) {
+    return {
+      ofToString(frame),
+      "0",
+
+      // position
+      "", "",
+
+      // scale
+      "",
+
+      // orientation
+      "", "", "",
+
+      // direction
+      "",
+
+      // rotattion matrix
+      "", "", "", "",
+      "", "", "", "",
+      "", "", "", "",
+      "", "", "", "",
+    };
+  }
+  auto pos = tracker.getPosition();
+  auto scale = tracker.getScale();
+  auto orient = tracker.getOrientation();
+  auto dir = tracker.getDirection();
+  auto rot = tracker.getRotationMatrix();
+  return {
+    ofToString(frame),
+    "1",
+
+    // position
+    ofToString(pos.x), ofToString(pos.y),
+
+    // scale
+    ofToString(scale),
+
+    // orientation
+    ofToString(orient.x), ofToString(orient.y), ofToString(orient.z),
+
+    // direction
+    enumToString(dir),
+
+    // rotation matrix
+    ofToString(rot(0, 0)), ofToString(rot(0, 1)), ofToString(rot(0, 2)), ofToString(rot(0, 3)),
+    ofToString(rot(1, 0)), ofToString(rot(1, 1)), ofToString(rot(1, 2)), ofToString(rot(1, 3)),
+    ofToString(rot(2, 0)), ofToString(rot(2, 1)), ofToString(rot(2, 2)), ofToString(rot(2, 3)),
+    ofToString(rot(3, 0)), ofToString(rot(3, 1)), ofToString(rot(3, 2)), ofToString(rot(3, 3)),
+  };
+}
+
+
