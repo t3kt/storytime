@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "ofxFaceTracker.h"
 #include "Output.h"
+#include "TableWriter.h"
 #include <memory>
 #include <string>
 #include <vector>
@@ -33,12 +34,15 @@ protected:
 
   void writeRow(const CellList& cells);
 
+  TableWriter& table() { return *_table; }
+
 //  void beginRow();
 //  void nextCell();
 //  void endRow();
 
   std::filesystem::path _filepath;
   ofFile _file;
+  std::unique_ptr<TableWriter> _table;
   bool _atRowStart;
 };
 

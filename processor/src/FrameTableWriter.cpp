@@ -10,6 +10,7 @@ bool FrameTableWriter::setup() {
     ofLogFatalError() << "Cannot open file " << _filepath;
     return false;
   }
+  _table = std::make_unique<TableWriter>(_file);
   auto headers = getHeaders();
   writeRow(headers);
   return true;
@@ -23,17 +24,8 @@ const char CELL_SEPARATOR = '\t';
 const char LINE_SEPARATOR = '\n';
 
 void FrameTableWriter::writeRow(const CellList& cells) {
-  bool atStart = true;
-  for (const auto& cell : cells) {
-    if (atStart) {
-      atStart = false;
-    } else {
-      _file << CELL_SEPARATOR;
-    }
-    _file << cell;
-  }
-  _file << LINE_SEPARATOR;
-  _file.flush();
+  table().writeCells(cells.begin(), cells.end());
+  table().endRow();
 }
 
 void FrameTableWriter::writeFrame(const ofVideoPlayer& video,

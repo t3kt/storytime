@@ -20,6 +20,7 @@
 		3237AF881F677C3C00420F15 /* MultiFileTableOutput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3237AF861F677C3C00420F15 /* MultiFileTableOutput.cpp */; };
 		324966791F64AB4D0017F29E /* Settings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 324966771F64AB4D0017F29E /* Settings.cpp */; };
 		3249667C1F64ADE80017F29E /* Output.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3249667A1F64ADE80017F29E /* Output.cpp */; };
+		3285BB931F6B9EDF00DC3472 /* TableWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3285BB911F6B9EDF00DC3472 /* TableWriter.cpp */; };
 		32AC99511F68BA69009FD034 /* FrameTableWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32AC994F1F68BA69009FD034 /* FrameTableWriter.cpp */; };
 		32D026241F5A56970044E85E /* TrackingProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32D026221F5A56970044E85E /* TrackingProcessor.cpp */; };
 		32D026261F5A5A6B0044E85E /* JsonOutput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32D026251F5A5A6B0044E85E /* JsonOutput.cpp */; };
@@ -139,6 +140,8 @@
 		3249667A1F64ADE80017F29E /* Output.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Output.cpp; sourceTree = "<group>"; };
 		3249667B1F64ADE80017F29E /* Output.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Output.h; sourceTree = "<group>"; };
 		326A339C99C67EFE1154F455 /* fast_math.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = fast_math.hpp; path = ../../openFrameworks/addons/ofxOpenCv/libs/opencv/include/opencv2/core/fast_math.hpp; sourceTree = SOURCE_ROOT; };
+		3285BB911F6B9EDF00DC3472 /* TableWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TableWriter.cpp; sourceTree = "<group>"; };
+		3285BB921F6B9EDF00DC3472 /* TableWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableWriter.h; sourceTree = "<group>"; };
 		32AC994F1F68BA69009FD034 /* FrameTableWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FrameTableWriter.cpp; sourceTree = "<group>"; };
 		32AC99501F68BA69009FD034 /* FrameTableWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FrameTableWriter.h; sourceTree = "<group>"; };
 		32D026221F5A56970044E85E /* TrackingProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TrackingProcessor.cpp; sourceTree = "<group>"; };
@@ -1011,6 +1014,8 @@
 				3237AF871F677C3C00420F15 /* MultiFileTableOutput.h */,
 				32AC994F1F68BA69009FD034 /* FrameTableWriter.cpp */,
 				32AC99501F68BA69009FD034 /* FrameTableWriter.h */,
+				3285BB911F6B9EDF00DC3472 /* TableWriter.cpp */,
+				3285BB921F6B9EDF00DC3472 /* TableWriter.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -1252,6 +1257,7 @@
 				A4D0F818388ABFF0A7006B98 /* Expression.cpp in Sources */,
 				A5167C6D3033B5FBF71AB855 /* ExpressionClassifier.cpp in Sources */,
 				EB36AD80A406C0C3FFBA58B4 /* ofxFaceTracker.cpp in Sources */,
+				3285BB931F6B9EDF00DC3472 /* TableWriter.cpp in Sources */,
 				793C048522C375D3B799F8F4 /* CLM.cc in Sources */,
 				E4DF01C9CB1E947E20B7460E /* FCheck.cc in Sources */,
 				2B8A0931E62F06730F93A3DC /* FDet.cc in Sources */,
