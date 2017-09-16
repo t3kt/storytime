@@ -20,6 +20,8 @@
 		3237AF881F677C3C00420F15 /* MultiFileTableOutput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3237AF861F677C3C00420F15 /* MultiFileTableOutput.cpp */; };
 		324966791F64AB4D0017F29E /* Settings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 324966771F64AB4D0017F29E /* Settings.cpp */; };
 		3249667C1F64ADE80017F29E /* Output.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3249667A1F64ADE80017F29E /* Output.cpp */; };
+		3251C8041F6CC59A00E8432F /* FeatureTableWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3251C8021F6CC59A00E8432F /* FeatureTableWriter.cpp */; };
+		3251C8071F6CD07900E8432F /* PointsTableWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3251C8051F6CD07900E8432F /* PointsTableWriter.cpp */; };
 		32AC99511F68BA69009FD034 /* FrameTableWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32AC994F1F68BA69009FD034 /* FrameTableWriter.cpp */; };
 		32D026241F5A56970044E85E /* TrackingProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32D026221F5A56970044E85E /* TrackingProcessor.cpp */; };
 		32D026261F5A5A6B0044E85E /* JsonOutput.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32D026251F5A5A6B0044E85E /* JsonOutput.cpp */; };
@@ -138,6 +140,10 @@
 		324966781F64AB4D0017F29E /* Settings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Settings.h; sourceTree = "<group>"; };
 		3249667A1F64ADE80017F29E /* Output.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Output.cpp; sourceTree = "<group>"; };
 		3249667B1F64ADE80017F29E /* Output.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Output.h; sourceTree = "<group>"; };
+		3251C8021F6CC59A00E8432F /* FeatureTableWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FeatureTableWriter.cpp; sourceTree = "<group>"; };
+		3251C8031F6CC59A00E8432F /* FeatureTableWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FeatureTableWriter.h; sourceTree = "<group>"; };
+		3251C8051F6CD07900E8432F /* PointsTableWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PointsTableWriter.cpp; sourceTree = "<group>"; };
+		3251C8061F6CD07900E8432F /* PointsTableWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PointsTableWriter.h; sourceTree = "<group>"; };
 		326A339C99C67EFE1154F455 /* fast_math.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = fast_math.hpp; path = ../../openFrameworks/addons/ofxOpenCv/libs/opencv/include/opencv2/core/fast_math.hpp; sourceTree = SOURCE_ROOT; };
 		3285BB921F6B9EDF00DC3472 /* TableWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableWriter.h; sourceTree = "<group>"; };
 		32AC994F1F68BA69009FD034 /* FrameTableWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FrameTableWriter.cpp; sourceTree = "<group>"; };
@@ -1013,6 +1019,10 @@
 				32AC994F1F68BA69009FD034 /* FrameTableWriter.cpp */,
 				32AC99501F68BA69009FD034 /* FrameTableWriter.h */,
 				3285BB921F6B9EDF00DC3472 /* TableWriter.h */,
+				3251C8021F6CC59A00E8432F /* FeatureTableWriter.cpp */,
+				3251C8031F6CC59A00E8432F /* FeatureTableWriter.h */,
+				3251C8051F6CD07900E8432F /* PointsTableWriter.cpp */,
+				3251C8061F6CD07900E8432F /* PointsTableWriter.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -1265,12 +1275,14 @@
 				B4D494959B589BA388F49ED6 /* PAW.cc in Sources */,
 				3237AF881F677C3C00420F15 /* MultiFileTableOutput.cpp in Sources */,
 				B79E7B912F0EFD3715763F0B /* PDM.cc in Sources */,
+				3251C8041F6CC59A00E8432F /* FeatureTableWriter.cpp in Sources */,
 				23E11DCF07DC6E7424696D89 /* Tracker.cc in Sources */,
 				F5FCFB7B91DC2F2B6382FDFE /* ofxCvColorImage.cpp in Sources */,
 				0109C10BA1AEC14D48F4B63F /* ofxCvContourFinder.cpp in Sources */,
 				324966791F64AB4D0017F29E /* Settings.cpp in Sources */,
 				FB8154222090E1A777794C88 /* ofxCvFloatImage.cpp in Sources */,
 				633CD42DDD30A40C6C040CB3 /* ofxCvGrayscaleImage.cpp in Sources */,
+				3251C8071F6CD07900E8432F /* PointsTableWriter.cpp in Sources */,
 				24666B72118D905E6B13F3DE /* ofxCvHaarFinder.cpp in Sources */,
 				24E3AA0B7B56DE70544DBDD9 /* ofxCvImage.cpp in Sources */,
 				7F62C792C5597BE4DD66D166 /* ofxCvShortImage.cpp in Sources */,

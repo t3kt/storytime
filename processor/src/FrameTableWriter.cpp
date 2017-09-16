@@ -56,15 +56,12 @@ void TransformTableWriter::writeHeaderRow() {
   .writeCells({
     "frame",
     "found",
-
-    "pos_x", "pos_y",
-
-    "scale",
-
-    "orient_x", "orient_y", "orient_z",
-
-    "dir",
-
+  })
+  .writeHeaderCellsXY("pos_")
+  .writeCell("scale")
+  .writeHeaderCellsXYZ("orient_")
+  .writeCell("dir")
+  .writeCells({
     "rot_0_0", "rot_0_1", "rot_0_2", "rot_0_3",
     "rot_1_0", "rot_1_1", "rot_1_2", "rot_1_3",
     "rot_2_0", "rot_2_1", "rot_2_2", "rot_2_3",

@@ -36,6 +36,32 @@ public:
     return *this;
   }
 
+  TableWriter& writeHeaderCells(std::string prefix, std::initializer_list<std::string> suffixes) {
+    for (const auto& suffix : suffixes) {
+      writeCell(prefix + suffix);
+    }
+    return *this;
+  }
+
+  TableWriter& writeHeaderCells(std::string prefix, std::vector<std::string> suffixes) {
+    for (const auto& suffix : suffixes) {
+      writeCell(prefix + suffix);
+    }
+    return *this;
+  }
+
+  TableWriter& writeHeaderCellsXY(std::string prefix) {
+    return writeHeaderCells(prefix, {"x", "y"});
+  }
+
+  TableWriter& writeHeaderCellsXYZ(std::string prefix) {
+    return writeHeaderCells(prefix, {"x", "y", "z"});
+  }
+
+  TableWriter& writeHeaderCellsXYZW(std::string prefix) {
+    return writeHeaderCells(prefix, {"x", "y", "z", "w"});
+  }
+
   TableWriter& writeCells(const ofVec2f& value) {
     writeCell(value.x);
     writeCell(value.y);
