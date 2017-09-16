@@ -23,5 +23,6 @@ private:
   ofVideoPlayer _video;
   ofxFaceTracker _tracker;
   std::shared_ptr<TrackingOutput> _output;
+  int _deadFrames;
 };
 

@@ -20,7 +20,7 @@ void ofApp::update() {
   ofLogVerbose() << "Processing next frame..";
   if (!_processor.processNextFrame()) {
     ofLogNotice() << "Finished processing frames";
-    exit();
+    ofExit();
     return;
   }
 }
@@ -36,4 +36,5 @@ void ofApp::draw(){
   ofSetLineWidth(2);
   tracker.draw(true);
   ofDrawBitmapString(ofToString((int) ofGetFrameRate()), 10, 20);
+  ofDrawBitmapString("Frame " + ofToString(video.getCurrentFrame()) + " / " + ofToString(video.getTotalNumFrames()), 10, 60);
 }

@@ -23,3 +23,5 @@ CrashAutoSave.toe
 *.xcbkptlist
 
 processor/testing/*
+
+*.xcexplist
