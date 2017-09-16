@@ -28,10 +28,13 @@ ofJson OutputSettings::toJson() const {
   return {
     {"format", JsonUtil::enumToJson(format)},
     {"file", file},
-    {"points", points},
+    {"imagePoints", imagePoints},
+    {"objectPoints", objectPoints},
+    {"meanObjectPoints", meanObjectPoints},
     {"meshes", meshes},
     {"haarRectangle", haarRectangle},
     {"transform", transform},
+    {"featureIndices", featureIndices},
     {"imageFeatures", imageFeatures},
     {"objectFeatures", objectFeatures},
     {"meanObjectFeatures", meanObjectFeatures},
@@ -43,10 +46,13 @@ void OutputSettings::readJson(const ofJson& obj) {
   JsonUtil::assertIsObject(obj);
   format = JsonUtil::enumFromJson<OutputFormat>(obj["format"]);
   file = JsonUtil::fromJsonField(obj, "file", file);
-  points = JsonUtil::fromJsonField(obj, "points", false);
+  imagePoints = JsonUtil::fromJsonField(obj, "imagePoints", false);
+  objectPoints = JsonUtil::fromJsonField(obj, "objectPoints", false);
+  meanObjectPoints = JsonUtil::fromJsonField(obj, "meanObjectPoints", false);
   meshes = JsonUtil::fromJsonField(obj, "meshes", false);
   haarRectangle = JsonUtil::fromJsonField(obj, "haarRectangle", false);
   transform = JsonUtil::fromJsonField(obj, "transform", false);
+  featureIndices = JsonUtil::fromJsonField(obj, "featureIndices", false);
   imageFeatures = JsonUtil::fromJsonField(obj, "imageFeatures", false);
   objectFeatures = JsonUtil::fromJsonField(obj, "objectFeatures", false);
   meanObjectFeatures = JsonUtil::fromJsonField(obj, "meanObjectFeatures", false);

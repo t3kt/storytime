@@ -24,6 +24,8 @@ private:
   bool openWritableFile(const std::filesystem::path& path, ofFile* file);
   bool addFrameWriter(std::shared_ptr<FrameWriter> writer);
 
+  bool writeFeatureIndices();
+
   const OutputSettings& _settings;
   ofDirectory _dir;
   ofFile _settingsFile;

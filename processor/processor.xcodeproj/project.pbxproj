@@ -148,6 +148,7 @@
 		3285BB921F6B9EDF00DC3472 /* TableWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableWriter.h; sourceTree = "<group>"; };
 		32AC994F1F68BA69009FD034 /* FrameTableWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FrameTableWriter.cpp; sourceTree = "<group>"; };
 		32AC99501F68BA69009FD034 /* FrameTableWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FrameTableWriter.h; sourceTree = "<group>"; };
+		32CEA7761F6DD64B009DF8BE /* ExposedFaceTracker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ExposedFaceTracker.h; sourceTree = "<group>"; };
 		32D026221F5A56970044E85E /* TrackingProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TrackingProcessor.cpp; sourceTree = "<group>"; };
 		32D026231F5A56970044E85E /* TrackingProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TrackingProcessor.h; sourceTree = "<group>"; };
 		32D026251F5A5A6B0044E85E /* JsonOutput.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = JsonOutput.cpp; sourceTree = "<group>"; };
@@ -1023,6 +1024,7 @@
 				3251C8031F6CC59A00E8432F /* FeatureTableWriter.h */,
 				3251C8051F6CD07900E8432F /* PointsTableWriter.cpp */,
 				3251C8061F6CD07900E8432F /* PointsTableWriter.h */,
+				32CEA7761F6DD64B009DF8BE /* ExposedFaceTracker.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;

@@ -33,10 +33,13 @@ public:
 
   OutputFormat format;
   std::string file;
-  bool points;
+  bool imagePoints;
+  bool objectPoints;
+  bool meanObjectPoints;
   bool meshes;
   bool haarRectangle;
   bool transform;
+  bool featureIndices;
   bool imageFeatures;
   bool objectFeatures;
   bool meanObjectFeatures;

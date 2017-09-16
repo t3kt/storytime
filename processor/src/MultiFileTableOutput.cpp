@@ -2,6 +2,10 @@
 #include "FrameTableWriter.h"
 #include "JsonOutput.h"
 #include "PointsTableWriter.h"
+#include "ExposedFaceTracker.h"
+#include <ofxTEnums.h>
+
+using namespace ofxTCommon;
 
 bool MultiFileTableOutput::setup() {
   _dir.openFromCWD(_settings.file);
@@ -20,12 +24,26 @@ bool MultiFileTableOutput::setup() {
   if (!openWritableFile("videoinfo.json", &_videoInfoFile)) {
     return false;
   }
+  if (_settings.featureIndices) {
+    if (!writeFeatureIndices()) {
+      return false;
+    }
+  }
 
-  if (_settings.points) {
+  if (_settings.imagePoints) {
     if (!addFrameWriter(createTableWriter<ImagePointsTableWriter>(_video, _tracker, getFilePath("imagepoints.txt")))) {
       return false;
     }
-    // TODO: set up points writer
+  }
+  if (_settings.objectPoints) {
+    if (!addFrameWriter(createTableWriter<ObjectPointsTableWriter>(_video, _tracker, getFilePath("objectpoints.txt")))) {
+      return false;
+    }
+  }
+  if (_settings.meanObjectPoints) {
+    if (!addFrameWriter(createTableWriter<MeanObjectPointsTableWriter>(_video, _tracker, getFilePath("meanobjectpoints.txt")))) {
+      return false;
+    }
   }
 
   if (_settings.meshes) {
@@ -62,6 +80,20 @@ bool MultiFileTableOutput::setup() {
     }
   }
 
+  return true;
+}
+
+bool MultiFileTableOutput::writeFeatureIndices() {
+  ofFile file;
+  if (!openWritableFile("featureindices.json", &file)) {
+    return false;
+  }
+  ofJson obj = {};
+  for (auto feature : getEnumInfo<ofxFaceTracker::Feature>().values()) {
+    obj[enumToString(feature)] = ExposedFaceTracker::getFeatureIndices(feature);
+  }
+  file << obj.dump(2);
+  file.close();
   return true;
 }
 
