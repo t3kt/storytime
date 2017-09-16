@@ -34,6 +34,6 @@ void ofApp::draw(){
   ofScale(scale, scale);
   video.draw(0, 0);
   ofSetLineWidth(2);
-  tracker.draw();
+  tracker.draw(true);
   ofDrawBitmapString(ofToString((int) ofGetFrameRate()), 10, 20);
 }
