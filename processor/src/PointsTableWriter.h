@@ -5,27 +5,6 @@
 #include <vector>
 
 template<typename P>
-std::vector<std::string> pointHeaderSuffixes();
-
-template<>
-std::vector<std::string> pointHeaderSuffixes<ofVec2f>() {
-  return { "x", "y" };
-}
-
-template<>
-std::vector<std::string> pointHeaderSuffixes<ofVec3f>() {
-  return { "x", "y", "z" };
-}
-
-template<typename P>
-std::size_t pointPartCount();
-
-template<>
-std::size_t pointPartCount<ofVec2f>() { return 2; }
-template<>
-std::size_t pointPartCount<ofVec3f>() { return 3; }
-
-template<typename P>
 class PointsTableWriter
 : public FrameTableWriter {
 public:
@@ -35,12 +14,79 @@ public:
   : FrameTableWriter(video, tracker, filepath) {}
 protected:
   void writeHeaderRow() override {
-    // TODO...
+    //    auto size = _tracker.size();
+    auto size = 66;
+    auto suffixes = getSuffixes();
+    for (auto i = 0; i < size; i++) {
+      table().writeHeaderCells("pt" + ofToString(i) + "_", suffixes);
+    }
+    table().endRow();
   }
 
   void writeFrame() override {
-    // TODO...
+    auto size = _tracker.size();
+    for (auto i = 0; i < size; i++) {
+      auto point = getPoint(i);
+      table().writeCells(point);
+    }
+    table().endRow();
+  }
+
+  virtual std::vector<std::string> getSuffixes() const = 0;
+  virtual P getPoint(int i) const = 0;
+};
+
+class ImagePointsTableWriter
+: public PointsTableWriter<ofVec2f> {
+public:
+  ImagePointsTableWriter(const ofVideoPlayer& video,
+                         const ofxFaceTracker& tracker,
+                         std::filesystem::path filepath)
+  : PointsTableWriter(video, tracker, filepath) {}
+
+protected:
+  ofVec2f getPoint(int i) const override {
+    return _tracker.getImagePoint(i);
+  }
+
+  std::vector<std::string> getSuffixes() const override {
+    return {"x", "y"};
   }
 };
 
+class ObjectPointsTableWriter
+: public PointsTableWriter<ofVec3f> {
+public:
+  ObjectPointsTableWriter(const ofVideoPlayer& video,
+                         const ofxFaceTracker& tracker,
+                         std::filesystem::path filepath)
+  : PointsTableWriter(video, tracker, filepath) {}
+
+protected:
+  ofVec3f getPoint(int i) const override {
+    return _tracker.getObjectPoint(i);
+  }
+
+  std::vector<std::string> getSuffixes() const override {
+    return {"x", "y", "z"};
+  }
+};
+
+class MeanObjectPointsTableWriter
+: public PointsTableWriter<ofVec3f> {
+public:
+  MeanObjectPointsTableWriter(const ofVideoPlayer& video,
+                              const ofxFaceTracker& tracker,
+                              std::filesystem::path filepath)
+  : PointsTableWriter(video, tracker, filepath) {}
+
+protected:
+  ofVec3f getPoint(int i) const override {
+    return _tracker.getMeanObjectPoint(i);
+  }
+
+  std::vector<std::string> getSuffixes() const override {
+    return {"x", "y", "z"};
+  }
+};
 

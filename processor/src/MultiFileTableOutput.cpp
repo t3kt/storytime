@@ -1,6 +1,7 @@
 #include "MultiFileTableOutput.h"
 #include "FrameTableWriter.h"
 #include "JsonOutput.h"
+#include "PointsTableWriter.h"
 
 bool MultiFileTableOutput::setup() {
   _dir.openFromCWD(_settings.file);
@@ -21,6 +22,9 @@ bool MultiFileTableOutput::setup() {
   }
 
   if (_settings.points) {
+    if (!addFrameWriter(createTableWriter<ImagePointsTableWriter>(_video, _tracker, getFilePath("imagepoints.txt")))) {
+      return false;
+    }
     // TODO: set up points writer
   }
 
