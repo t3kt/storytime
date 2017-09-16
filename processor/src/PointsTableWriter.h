@@ -31,8 +31,10 @@ protected:
     auto size = _tracker.size();
     table().writeCell(_video.getCurrentFrame());
     if (!_tracker.getFound()) {
-      table().writeCell(0);
-      table().writeBlankCells(size * P::DIM);
+      table()
+      .writeCell(0)
+      .writeBlankCells(size * P::DIM)
+      .endRow();
       return;
     }
     table().writeCell(1);
