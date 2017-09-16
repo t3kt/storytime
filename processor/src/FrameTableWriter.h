@@ -13,8 +13,11 @@ using CellList = std::vector<std::string>;
 class FrameTableWriter : public FrameWriter {
 protected:
 public:
-  FrameTableWriter(std::filesystem::path filepath)
-  : _filepath(filepath) {}
+  FrameTableWriter(const ofVideoPlayer& video,
+                   const ofxFaceTracker& tracker,
+                   std::filesystem::path filepath)
+  : FrameWriter(video, tracker)
+  , _filepath(filepath) {}
 
   virtual ~FrameTableWriter() {
     if (_file.is_open()) {
@@ -23,8 +26,7 @@ public:
   }
 
   virtual bool setup() override;
-  virtual void writeFrame(const ofVideoPlayer& video,
-                          const ofxFaceTracker& tracker) override = 0;
+  virtual void writeFrame() override = 0;
   virtual void close() override;
 protected:
   TableWriter& table() { return *_table; }
@@ -40,42 +42,48 @@ protected:
 class HaarRectangleTableWriter
 : public FrameTableWriter {
 public:
-  HaarRectangleTableWriter(std::filesystem::path filepath)
-  : FrameTableWriter(filepath) {}
+  HaarRectangleTableWriter(const ofVideoPlayer& video,
+                           const ofxFaceTracker& tracker,
+                           std::filesystem::path filepath)
+  : FrameTableWriter(video, tracker, filepath) {}
 protected:
   void writeHeaderRow() override;
 
-  void writeFrame(const ofVideoPlayer& video,
-                  const ofxFaceTracker& tracker) override;
+  void writeFrame() override;
 };
 
 class TransformTableWriter
 : public FrameTableWriter {
 public:
-  TransformTableWriter(std::filesystem::path filepath)
-  : FrameTableWriter(filepath) {}
+  TransformTableWriter(const ofVideoPlayer& video,
+                       const ofxFaceTracker& tracker,
+                       std::filesystem::path filepath)
+  : FrameTableWriter(video, tracker, filepath) {}
 protected:
   void writeHeaderRow() override;
 
-  void writeFrame(const ofVideoPlayer& video,
-                  const ofxFaceTracker& tracker) override;
+  void writeFrame() override;
 };
 
 class GestureTableWriter
 : public FrameTableWriter {
 public:
-  GestureTableWriter(std::filesystem::path filepath);
+  GestureTableWriter(const ofVideoPlayer& video,
+                     const ofxFaceTracker& tracker,
+                     std::filesystem::path filepath);
 protected:
   void writeHeaderRow() override;
 
-  void writeFrame(const ofVideoPlayer& video,
-                  const ofxFaceTracker& tracker) override;
+  void writeFrame() override;
 private:
   const std::vector<ofxFaceTracker::Gesture>& _gestures;
 };
 
 template<typename W>
-std::shared_ptr<FrameTableWriter> createTableWriter(std::filesystem::path filepath) {
+std::shared_ptr<FrameTableWriter>
+createTableWriter(const ofVideoPlayer& video,
+                  const ofxFaceTracker& tracker,
+                  std::filesystem::path filepath) {
   ofLogNotice() << "Creating table writer for " << filepath;
-  return std::make_shared<W>(filepath);
+  return std::make_shared<W>(video, tracker, filepath);
 }

@@ -61,56 +61,55 @@ ofJson getVideoInfoJson(const ofVideoPlayer& video) {
   };
 }
 
-void JsonTrackingOutput::writeVideoInfo(const ofVideoPlayer& video) {
-  ofJson obj = getVideoInfoJson(video);
+void JsonTrackingOutput::writeVideoInfo() {
+  ofJson obj = getVideoInfoJson(_video);
   _file << "\"videoInfo\": " << obj.dump(2) << ",\n";
   _file << "\"frames\": [\n";
 }
 
-void JsonTrackingOutput::writeFrame(const ofVideoPlayer& video,
-                                    const ofxFaceTracker& tracker) {
+void JsonTrackingOutput::writeFrame() {
   ofJson obj = {
-    {"frame", video.getCurrentFrame()},
+    {"frame", _video.getCurrentFrame()},
   };
-  if (!tracker.getFound()) {
+  if (!_tracker.getFound()) {
     obj["missing"] = true;
     _file << obj << "\n";
   } else {
 
-    if (_settings.haarRectangle && tracker.getHaarFound()) {
-      obj["haar"] = JsonUtil::toJson(tracker.getHaarRectangle());
+    if (_settings.haarRectangle && _tracker.getHaarFound()) {
+      obj["haar"] = JsonUtil::toJson(_tracker.getHaarRectangle());
     }
 
     if (_settings.transform) {
-      obj["pos"] = JsonUtil::toJson(tracker.getPosition());
-      obj["scale"] = tracker.getScale();
-      obj["orient"] = JsonUtil::toJson(tracker.getOrientation());
-      obj["rot"] = JsonUtil::toJson(tracker.getRotationMatrix());
-      obj["dir"] = JsonUtil::enumToJson(tracker.getDirection());
+      obj["pos"] = JsonUtil::toJson(_tracker.getPosition());
+      obj["scale"] = _tracker.getScale();
+      obj["orient"] = JsonUtil::toJson(_tracker.getOrientation());
+      obj["rot"] = JsonUtil::toJson(_tracker.getRotationMatrix());
+      obj["dir"] = JsonUtil::enumToJson(_tracker.getDirection());
     }
 
     if (_settings.imageFeatures) {
       obj["imgFeatures"] = featuresToJson([&](Feature f) {
-        return tracker.getImageFeature(f);
+        return _tracker.getImageFeature(f);
       });
     }
 
     if (_settings.objectFeatures) {
       obj["objFeatures"] = featuresToJson([&](Feature f) {
-        return tracker.getObjectFeature(f);
+        return _tracker.getObjectFeature(f);
       });
     }
 
     if (_settings.meanObjectFeatures) {
       obj["meanObjFeatures"] = featuresToJson([&](Feature f) {
-        return tracker.getMeanObjectFeature(f);
+        return _tracker.getMeanObjectFeature(f);
       });
     }
 
     if (_settings.gestures) {
       auto gesturesObj = ofJson::object();
       for (const auto gesture : getEnumInfo<Gesture>().values()) {
-        auto value = tracker.getGesture(gesture);
+        auto value = _tracker.getGesture(gesture);
         gesturesObj[enumToString(gesture)] = value;
       }
       obj["gestures"] = gesturesObj;

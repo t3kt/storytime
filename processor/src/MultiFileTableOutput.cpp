@@ -29,13 +29,13 @@ bool MultiFileTableOutput::setup() {
   }
 
   if (_settings.haarRectangle) {
-    if (!addFrameWriter(createTableWriter<HaarRectangleTableWriter>(getFilePath("haarrect.txt")))) {
+    if (!addFrameWriter(createTableWriter<HaarRectangleTableWriter>(_video, _tracker, getFilePath("haarrect.txt")))) {
       return false;
     }
   }
 
   if (_settings.transform) {
-    if (!addFrameWriter(createTableWriter<TransformTableWriter>(getFilePath("transform.txt")))) {
+    if (!addFrameWriter(createTableWriter<TransformTableWriter>(_video, _tracker, getFilePath("transform.txt")))) {
       return false;
     }
   }
@@ -53,7 +53,7 @@ bool MultiFileTableOutput::setup() {
   }
 
   if (_settings.gestures) {
-    if (!addFrameWriter(createTableWriter<GestureTableWriter>(getFilePath("gesture.txt")))) {
+    if (!addFrameWriter(createTableWriter<GestureTableWriter>(_video, _tracker, getFilePath("gesture.txt")))) {
       return false;
     }
   }
@@ -88,16 +88,15 @@ void MultiFileTableOutput::writeSettings(const Settings& settings) {
   _settingsFile.close();
 }
 
-void MultiFileTableOutput::writeVideoInfo(const ofVideoPlayer& video) {
-  auto infoObj = getVideoInfoJson(video);
+void MultiFileTableOutput::writeVideoInfo() {
+  auto infoObj = getVideoInfoJson(_video);
   _videoInfoFile << infoObj.dump(2);
   _videoInfoFile.close();
 }
 
-void MultiFileTableOutput::writeFrame(const ofVideoPlayer& video,
-                                      const ofxFaceTracker& tracker) {
+void MultiFileTableOutput::writeFrame() {
   for (auto& writer : _frameWriters) {
-    writer->writeFrame(video, tracker);
+    writer->writeFrame();
   }
 }
 

@@ -31,17 +31,16 @@ void HaarRectangleTableWriter::writeHeaderRow() {
   table().endRow();
 }
 
-void HaarRectangleTableWriter::writeFrame(const ofVideoPlayer& video,
-                         const ofxFaceTracker& tracker) {
-  auto frame = video.getCurrentFrame();
+void HaarRectangleTableWriter::writeFrame() {
+  auto frame = _video.getCurrentFrame();
   table().writeCell(frame);
-  if (!tracker.getHaarFound()) {
+  if (!_tracker.getHaarFound()) {
     table()
     .writeCell(0)
     .writeBlankCells(4);
   } else {
     table().writeCell(1);
-    auto rect = tracker.getHaarRectangle();
+    auto rect = _tracker.getHaarRectangle();
     table()
     .writeCell(rect.getX())
     .writeCell(rect.getY())
@@ -70,20 +69,19 @@ void TransformTableWriter::writeHeaderRow() {
   .endRow();
 }
 
-void TransformTableWriter::writeFrame(const ofVideoPlayer& video,
-                                               const ofxFaceTracker& tracker) {
-  auto frame = video.getCurrentFrame();
+void TransformTableWriter::writeFrame() {
+  auto frame = _video.getCurrentFrame();
   table().writeCell(frame);
-  if (!tracker.getFound()) {
+  if (!_tracker.getFound()) {
     table()
     .writeCell(0)
     .writeBlankCells(2 + 1 + 3 + 1 + 16);
   } else {
-    auto pos = tracker.getPosition();
-    auto scale = tracker.getScale();
-    auto orient = tracker.getOrientation();
-    auto dir = tracker.getDirection();
-    auto rot = tracker.getRotationMatrix();
+    auto pos = _tracker.getPosition();
+    auto scale = _tracker.getScale();
+    auto orient = _tracker.getOrientation();
+    auto dir = _tracker.getDirection();
+    auto rot = _tracker.getRotationMatrix();
     table()
     .writeCell(1)
     .writeCells(pos)
@@ -95,8 +93,10 @@ void TransformTableWriter::writeFrame(const ofVideoPlayer& video,
   table().endRow();
 }
 
-GestureTableWriter::GestureTableWriter(std::filesystem::path filepath)
-: FrameTableWriter(filepath)
+GestureTableWriter::GestureTableWriter(const ofVideoPlayer& video,
+                                       const ofxFaceTracker& tracker,
+                                       std::filesystem::path filepath)
+: FrameTableWriter(video, tracker, filepath)
 , _gestures(getEnumInfo<ofxFaceTracker::Gesture>().values()) {}
 
 void GestureTableWriter::writeHeaderRow() {
@@ -111,11 +111,10 @@ void GestureTableWriter::writeHeaderRow() {
   table().endRow();
 }
 
-void GestureTableWriter::writeFrame(const ofVideoPlayer& video,
-                                    const ofxFaceTracker& tracker) {
-  auto frame = video.getCurrentFrame();
+void GestureTableWriter::writeFrame() {
+  auto frame = _video.getCurrentFrame();
   table().writeCell(frame);
-  if (!tracker.getFound()) {
+  if (!_tracker.getFound()) {
     table()
     .writeCell(0)
     .writeBlankCells(_gestures.size());
@@ -123,7 +122,7 @@ void GestureTableWriter::writeFrame(const ofVideoPlayer& video,
     table()
     .writeCell(1);
     for (const auto& gesture : _gestures) {
-      table().writeCell(tracker.getGesture(gesture));
+      table().writeCell(_tracker.getGesture(gesture));
     }
   }
   table().endRow();

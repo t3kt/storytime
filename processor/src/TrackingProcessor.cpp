@@ -3,7 +3,7 @@
 bool TrackingProcessor::setup(Settings settings) {
   _settings = settings;
   ofLogNotice() << "TrackingProcessor::setup() settings: " << _settings;
-  _output = TrackingOutput::createOutput(_settings.output);
+  _output = TrackingOutput::createOutput(_video, _tracker, _settings.output);
   if (!_output) {
     return false;
   }
@@ -26,7 +26,7 @@ bool TrackingProcessor::loadMovie(const std::string& path) {
   if (!_video.load(path)) {
     return false;
   }
-  _output->writeVideoInfo(_video);
+  _output->writeVideoInfo();
   return true;
 }
 
@@ -54,6 +54,6 @@ bool TrackingProcessor::processNextFrame() {
   }
   _video.nextFrame();
   _tracker.update(ofxCv::toCv(_video));
-  _output->writeFrame(_video, _tracker);
+  _output->writeFrame();
   return true;
 }

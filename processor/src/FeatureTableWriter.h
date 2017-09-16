@@ -6,14 +6,16 @@
 class FeatureTableWriter
 : public FrameTableWriter {
 public:
-  FeatureTableWriter(std::filesystem::path filepath, bool is2D)
-  : FrameTableWriter(filepath)
+  FeatureTableWriter(const ofVideoPlayer& video,
+                     const ofxFaceTracker& tracker,
+                     std::filesystem::path filepath,
+                     bool is2D)
+  : FrameTableWriter(video, tracker, filepath)
   , _is2D(is2D) {}
 protected:
   void writeHeaderRow() override;
 
-  void writeFrame(const ofVideoPlayer& video,
-                  const ofxFaceTracker& tracker) override;
+  void writeFrame() override;
   bool _is2D;
 };
 

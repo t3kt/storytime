@@ -29,15 +29,16 @@ template<typename P>
 class PointsTableWriter
 : public FrameTableWriter {
 public:
-  PointsTableWriter(std::filesystem::path filepath)
-  : FrameTableWriter(filepath) {}
+  PointsTableWriter(const ofVideoPlayer& video,
+                    const ofxFaceTracker& tracker,
+                    std::filesystem::path filepath)
+  : FrameTableWriter(video, tracker, filepath) {}
 protected:
   void writeHeaderRow() override {
     // TODO...
   }
 
-  void writeFrame(const ofVideoPlayer& video,
-                  const ofxFaceTracker& tracker) override {
+  void writeFrame() override {
     // TODO...
   }
 };
