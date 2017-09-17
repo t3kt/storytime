@@ -40,6 +40,7 @@ bool loadSettingsFile(const std::string& path, Settings* settings) {
 int main(int argc, const char **argv){
   ofAppGLFWWindow window;
 	ofSetupOpenGL(&window, 1024, 768, OF_WINDOW);
+  ofSetLogLevel(OF_LOG_VERBOSE);
 
   if (argc < 3) {
     return usage(argv[0]);
