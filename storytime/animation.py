@@ -11,15 +11,7 @@ def _initCsvDATDialect():
 			lineterminator='\n',
 			quoting=csv.QUOTE_NONE)
 
-
-class AnimationTableWriter:
-	def __init__(self):
-		self.channels = []
-
-	def AddChannels(self, channels):
-		self.channels += channels
-
-	def WriteChannels(self, path):
+def WriteChannels(path, channels):
 		with open(path, 'w') as outfile:
 			_initCsvDATDialect()
 			writer = csv.DictWriter(
@@ -29,4 +21,39 @@ class AnimationTableWriter:
 					'name', 'id',  'left', 'right', 'default', 'keys',
 					'liner', 'lineg', 'lineb', 'picked', 'display', 'template',
 				])
-			pass
+			writer.writeheader()
+			i = 1
+			for channel in channels:
+				writer.writerow({
+					'name': channel,
+					'id': i,
+					'left': 'hold',
+					'right': 'hold',
+					'default': 0,
+					'keys': 'keys',
+					'liner': 0.1,
+					'lineg': 0.5,
+					'lineb': 0.5,
+					'picked': 1,
+					'display': 1,
+					'template': 0,
+				})
+				i += 1
+
+class AnimationKeysWriter:
+	def __init__(self, path, channels):
+		self.path = path
+		self.channels = channels
+
+	def WriteChannels(self, path):
+		with open(path, 'w') as outfile:
+			_initCsvDATDialect()
+			writer = csv.DictWriter(
+				outfile,
+				dialect='DAT',
+				fieldnames=[
+					'id', 'x',  'y', 'inslope', 'inaccel', 'expression',
+					'outslope', 'outaccel',
+				])
+			writer.writeheader()
+			# ..........
