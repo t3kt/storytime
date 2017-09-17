@@ -46,7 +46,7 @@ bool TrackingProcessor::processNextFrame() {
   _video.update();
   if (!_tracker.getFound()) {
     _deadFrames++;
-    if (_deadFrames > 30) {
+    if (_deadFrames > 200) {
       ofLogWarning() << "Too many dead frames! Stopping!!";
       return false;
     }
