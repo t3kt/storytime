@@ -1,22 +1,9 @@
-import csv
-
-
-def _initCsvDATDialect():
-	if 'DAT' not in csv.list_dialects():
-		csv.register_dialect(
-			'DAT',
-			delimiter='\t',
-			doublequote=False,
-			escapechar=None,
-			lineterminator='\n',
-			quoting=csv.QUOTE_NONE)
+from storytime.shared import *
 
 def WriteChannels(path, channels):
 		with open(path, 'w') as outfile:
-			_initCsvDATDialect()
-			writer = csv.DictWriter(
+			writer = DATDictWriter(
 				outfile,
-				dialect='DAT',
 				fieldnames=[
 					'name', 'id',  'left', 'right', 'default', 'keys',
 					'liner', 'lineg', 'lineb', 'picked', 'display', 'template',
@@ -49,10 +36,8 @@ class AnimationKeysWriter:
 
 	def __enter__(self):
 		self.outfile = open(self.path, 'w')
-		_initCsvDATDialect()
-		self.writer = csv.DictWriter(
+		self.writer = DATDictWriter(
 			self.outfile,
-			dialect='DAT',
 			fieldnames=[
 				'id', 'x',  'y', 'inslope', 'inaccel', 'expression',
 				'outslope', 'outaccel',

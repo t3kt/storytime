@@ -7,24 +7,9 @@ import csv
 
 import common.lib.util as util
 from storytime.ae_keyframes import KeyframeSet, Block, StripNumSuffix
+from storytime.shared import *
 
 _ParseFloat = util.ParseFloat
-
-def _initCsvDATDialect():
-	if 'DAT' not in csv.list_dialects():
-		csv.register_dialect(
-			'DAT',
-			delimiter='\t',
-			doublequote=False,
-			escapechar=None,
-			lineterminator='\n',
-			quoting=csv.QUOTE_NONE)
-
-def _DATDictReader(f, fieldnames=None, **kwargs):
-	_initCsvDATDialect()
-	reader = csv.DictReader(f, fieldnames=fieldnames, dialect='DAT', **kwargs)
-	reader.fieldnames  # loads and parses the first line as a side-effect
-	return reader
 
 def eprint(*args):
 	print(*args, file=sys.stderr)
@@ -227,7 +212,7 @@ class KeyframeChunksParser(ParserBase):
 		try:
 			indexbasedir = os.path.dirname(self.indexpath)
 			with open(self.indexpath) as indexfile:
-				reader = _DATDictReader(indexfile)
+				reader = DATDictReader(indexfile)
 				for row in reader:
 					chunk = {
 						'file': os.path.join(indexbasedir, row['file']),
@@ -390,7 +375,7 @@ class DATWriter:
 def _IsChunksFile(path):
 	with open(path) as f:
 		try:
-			reader = _DATDictReader(f)
+			reader = DATDictReader(f)
 			fields = reader.fieldnames
 			return 'file' in fields and 'startframe' in fields
 		except csv.Error:

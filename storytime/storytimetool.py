@@ -1,20 +1,10 @@
 from storytime.storytimedb import *
+from storytime.shared import *
 import pysrt
 from moviepy.editor import VideoFileClip
 import argparse
 import os.path
-import csv
 import re
-
-def _initCsvDATDialect():
-	if 'DAT' not in csv.list_dialects():
-		csv.register_dialect(
-			'DAT',
-			delimiter='\t',
-			doublequote=False,
-			escapechar='',
-			lineterminator='\n',
-			quoting=csv.QUOTE_NONE)
 
 def _cleanValueForDAT(val):
 	if val and isinstance(val, str):
@@ -102,10 +92,9 @@ class StorytimeTool:
 		return [self.db.getStory(args.teller, args.story, check=True)]
 
 	def writeTellerTable(self, outpath=None):
-		_initCsvDATDialect()
 		outpath = outpath or 'data/_tables/tellers.txt'
 		with open(outpath, 'w') as datfile:
-			writer = csv.DictWriter(datfile, ['name', 'label', 'storycount'], dialect='DAT')
+			writer = DATDictWriter(datfile, ['name', 'label', 'storycount'])
 			writer.writeheader()
 			for teller in self.db.tellers.values():
 				if teller.disabled:
@@ -117,13 +106,11 @@ class StorytimeTool:
 				}))
 
 	def writeStoryTable(self, outpath=None):
-		_initCsvDATDialect()
 		outpath = outpath or 'data/_tables/stories.txt'
 		with open(outpath, 'w') as datfile:
-			writer = csv.DictWriter(
+			writer = DATDictWriter(
 				datfile,
-				['id', 'teller', 'story', 'label', 'duration', 'fps', 'width', 'height', 'segmentcount', 'vidfile'],
-				dialect='DAT')
+				['id', 'teller', 'story', 'label', 'duration', 'fps', 'width', 'height', 'segmentcount', 'vidfile'])
 			writer.writeheader()
 			for teller in self.db.tellers.values():
 				if teller.disabled:
@@ -145,18 +132,16 @@ class StorytimeTool:
 					}))
 
 	def writeSegmentTable(self, outpath=None):
-		_initCsvDATDialect()
 		outpath = outpath or 'data/_tables/segments.txt'
 		with open(outpath, 'w') as datfile:
-			writer = csv.DictWriter(
+			writer = DATDictWriter(
 				datfile,
 				[
 					'id', 'teller', 'story', 'index',
 					'start', 'end', 'duration',
 					'start_fraction', 'end_fraction',
 					'text',
-				],
-				dialect='DAT')
+				])
 			writer.writeheader()
 			for teller in self.db.tellers.values():
 				if teller.disabled:
