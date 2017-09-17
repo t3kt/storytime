@@ -4,3 +4,6 @@
 [submodule "pysrt"]
 	path = pysrt
 	url = https://github.com/byroot/pysrt.git
+[submodule "processor/addons/ofxTCommon"]
+	path = processor/addons/ofxTCommon
+	url = https://github.com/t3kt/ofxTCommon.git

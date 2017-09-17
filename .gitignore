@@ -13,6 +13,9 @@ data/[a-z]*/
 CrashAutoSave.toe
 *.dmp
 
+*.xcuserstate
+*.xcscmblueprint
+
 *.xcscmblueprint
 
 *.xcuserstate
@@ -20,3 +23,5 @@ CrashAutoSave.toe
 *.xcbkptlist
 
 processor/testing/*
+
+*.xcexplist
