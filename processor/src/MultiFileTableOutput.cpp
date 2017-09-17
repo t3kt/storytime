@@ -21,7 +21,7 @@ bool MultiFileTableOutput::setup() {
   if (!openWritableFile("settings.json", &_settingsFile)) {
     return false;
   }
-  if (!openWritableFile("videoinfo.json", &_videoInfoFile)) {
+  if (!openWritableFile("videoinfo.txt", &_videoInfoFile)) {
     return false;
   }
   if (_settings.featureIndices) {
@@ -125,8 +125,32 @@ void MultiFileTableOutput::writeSettings(const Settings& settings) {
 }
 
 void MultiFileTableOutput::writeVideoInfo() {
-  auto infoObj = getVideoInfoJson(_video);
-  _videoInfoFile << infoObj.dump(2);
+  TableWriter table(_videoInfoFile);
+  table
+  .writeCell("file")
+  .writeCell(_video.getMoviePath())
+  .endRow();
+
+  table
+  .writeCell("width")
+  .writeCell(_video.getWidth())
+  .endRow();
+
+  table
+  .writeCell("height")
+  .writeCell(_video.getHeight())
+  .endRow();
+
+  table
+  .writeCell("frameCount")
+  .writeCell(_video.getTotalNumFrames())
+  .endRow();
+
+  table
+  .writeCell("duration")
+  .writeCell(_video.getDuration())
+  .endRow();
+
   _videoInfoFile.close();
 }
 
