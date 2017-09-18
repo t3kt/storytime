@@ -42,18 +42,18 @@ class AnimationKeysWriter:
 				'id', 'x',  'y', 'inslope', 'inaccel', 'expression',
 				'outslope', 'outaccel',
 			])
-		return None
+		self.writer.writeheader()
+		return self
 
 	def __exit__(self, exc_type, exc_val, exc_tb):
 		result = self.outfile.__exit__(exc_type, exc_val, exc_tb)
 		self.outfile = None
 		return result
 
-	def WriteHeader(self):
-		self.writer.writeheader()
-
-	def WriteFrameFromList(self, frame, channelvals):
+	def WriteFrame(self, frame, channelvals):
 		for channelindex, channelval in enumerate(channelvals):
+			if channelval == '':
+				continue
 			self.writer.writerow({
 				'id': channelindex + 1,
 				'x': frame,
