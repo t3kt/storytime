@@ -53,7 +53,7 @@ def TrackingTableToClip(inputpath, rate=None, start=None, length=None):
 
 def WriteTrackingToClipSimple(inputpath, rate=None, start=None, length=None):
 	basepath = os.path.splitext(inputpath)[0]
-	chanpath = basepath + '-chop.chan'
+	chanpath = basepath + '-chop.clip'
 	clip = TrackingTableToClip(inputpath, rate=rate, start=start, length=length)
 	clip.WriteToFile(chanpath)
 
